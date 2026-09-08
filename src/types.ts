@@ -5,6 +5,7 @@ export type FailedStage = "judge" | "frontier" | "balanced" | "fast";
 export type TierConfig = {
   model: string;
   apiKey: string;
+  baseURL?: string;
 };
 
 export type AxonConfig = {
