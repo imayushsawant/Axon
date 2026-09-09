@@ -9,19 +9,26 @@ import { lookupTier } from "./classifier/tierLookup.js";
 import { costSaved, latencySaved } from "./metrics/costLatency.js";
 import {
   complete,
+  resolveProviderId,
   type CompleteRequest,
   type ProviderResult,
 } from "./models/providers.js";
 import type {
   AxonConfig,
+  FailedStage,
   HealthStatus,
   InferContext,
+  InferDegraded,
   InferOptions,
   InferResult,
+  InferStopped,
   InferSuccess,
   ModelTier,
   TierConfig,
 } from "./types.js";
+
+export const AXON_STOPPED_RESPONSE =
+  "Handle API key configuration and any model errors for the end user.";
 
 export type RoutingDecision =
   | {
@@ -91,6 +98,18 @@ function answerRequest(
   return request;
 }
 
+export function structuralTierStatus(config: TierConfig): string {
+  if (config.apiKey.trim() === "") {
+    return "failed: invalid key";
+  }
+  if (resolveProviderId(config.model) === "openai-compatible") {
+    if (config.baseURL === undefined || config.baseURL.trim() === "") {
+      return "failed: missing baseURL";
+    }
+  }
+  return "ok";
+}
+
 function toSuccess(
   response: string,
   tier: ModelTier,
@@ -105,16 +124,70 @@ function toSuccess(
   };
 }
 
+function toDegraded(
+  response: string,
+  answeredTier: ModelTier,
+  fallbackTier: ModelTier,
+  failedStage: FailedStage,
+  failedReason: string,
+): InferDegraded {
+  return {
+    response,
+    tier: answeredTier,
+    costSaved: costSaved(answeredTier, fallbackTier),
+    latencySaved: latencySaved(answeredTier, fallbackTier),
+    usedFallback: true,
+    failedStage,
+    failedReason,
+  };
+}
+
+function toStopped(
+  allocatedTier: ModelTier,
+  failedStage: FailedStage,
+  failedReason: string,
+): InferStopped {
+  return {
+    needsConfirmation: true,
+    allocatedTier,
+    failedStage,
+    failedReason,
+    usedFallback: false,
+    response: AXON_STOPPED_RESPONSE,
+  };
+}
+
 export class Axon {
   readonly config: AxonConfig;
   private readonly modelComplete: ModelComplete;
   private readonly judgeComplete: JudgeComplete;
+  private readonly liveStatus: Partial<Record<ModelTier, string>> = {};
 
   constructor(config: AxonConfig, internals?: AxonInternals) {
     this.config = config;
     this.modelComplete = internals?.complete ?? complete;
     this.judgeComplete =
       internals?.judgeComplete ?? asJudgeComplete(this.modelComplete);
+  }
+
+  private statusFor(tier: ModelTier): string {
+    const structural = structuralTierStatus(this.config.tiers[tier]);
+    if (structural !== "ok") {
+      return structural;
+    }
+    return this.liveStatus[tier] ?? "ok";
+  }
+
+  private snapshotHealth(): HealthStatus {
+    const frontier = this.statusFor("frontier");
+    const balanced = this.statusFor("balanced");
+    const fast = this.statusFor("fast");
+    const fallback = this.statusFor(this.config.fallbackTier);
+    return { frontier, balanced, fast, fallback };
+  }
+
+  private markLive(tier: ModelTier, status: string): void {
+    this.liveStatus[tier] = status;
   }
 
   async classify(
@@ -163,30 +236,79 @@ export class Axon {
     };
   }
 
-  async infer(prompt: string, options?: InferOptions): Promise<InferResult> {
-    const decision = await this.classify(prompt, options);
+  private async completeTier(
+    tier: ModelTier,
+    request: CompleteRequest,
+  ): Promise<ProviderResult> {
+    return this.modelComplete(this.config.tiers[tier], request);
+  }
 
-    if (decision.source === "judge_failed") {
-      throw new Error(
-        `Judge failed: ${decision.judgeFailure.reason}`,
+  private recordOutcome(tier: ModelTier, result: ProviderResult): void {
+    this.markLive(tier, result.ok ? "ok" : result.status);
+  }
+
+  private async tryFallback(
+    request: CompleteRequest,
+    allocatedTier: ModelTier,
+    failedStage: FailedStage,
+    failedReason: string,
+  ): Promise<InferDegraded | InferStopped> {
+    const fallbackTier = this.config.fallbackTier;
+    const result = await this.completeTier(fallbackTier, request);
+    this.recordOutcome(fallbackTier, result);
+
+    if (result.ok) {
+      return toDegraded(
+        result.text,
+        fallbackTier,
+        fallbackTier,
+        failedStage,
+        failedReason,
       );
     }
 
-    const tier = decision.allocatedTier;
-    const tierConfig = this.config.tiers[tier];
-    const result = await this.modelComplete(
-      tierConfig,
-      answerRequest(prompt, options?.context),
-    );
+    return toStopped(allocatedTier, fallbackTier, result.reason);
+  }
 
-    if (!result.ok) {
-      throw new Error(result.reason);
+  async infer(prompt: string, options?: InferOptions): Promise<InferResult> {
+    const decision = await this.classify(prompt, options);
+    const request = answerRequest(prompt, options?.context);
+    const fallbackTier = this.config.fallbackTier;
+
+    if (decision.source === "judge_failed") {
+      return this.tryFallback(
+        request,
+        fallbackTier,
+        "judge",
+        decision.judgeFailure.reason,
+      );
     }
 
-    return toSuccess(result.text, tier, this.config.fallbackTier);
+    const allocatedTier = decision.allocatedTier;
+    const result = await this.completeTier(allocatedTier, request);
+    this.recordOutcome(allocatedTier, result);
+
+    if (result.ok) {
+      return toSuccess(result.text, allocatedTier, fallbackTier);
+    }
+
+    if (decision.irreversible && allocatedTier === "frontier") {
+      return toStopped("frontier", "frontier", result.reason);
+    }
+
+    if (allocatedTier === fallbackTier) {
+      return toStopped(allocatedTier, allocatedTier, result.reason);
+    }
+
+    return this.tryFallback(
+      request,
+      allocatedTier,
+      allocatedTier,
+      result.reason,
+    );
   }
 
   async health(): Promise<HealthStatus> {
-    throw new Error("health() is not implemented yet");
+    return this.snapshotHealth();
   }
 }

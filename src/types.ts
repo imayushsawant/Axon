@@ -53,10 +53,11 @@ export type InferDegraded = {
 
 export type InferStopped = {
   needsConfirmation: true;
-  allocatedTier: "frontier";
-  failedStage: "frontier";
+  allocatedTier: ModelTier;
+  failedStage: FailedStage;
   failedReason: string;
   usedFallback: false;
+  response: string;
 };
 
 export type InferResult = InferSuccess | InferDegraded | InferStopped;
