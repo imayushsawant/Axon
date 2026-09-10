@@ -68,3 +68,7 @@ export type HealthStatus = {
   fast: string;
   fallback: string;
 };
+
+export type HealthOptions = {
+  live?: boolean;
+};

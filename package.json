@@ -1,6 +1,6 @@
 {
   "name": "axon-llmrouter",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "SDK-based multi-tier LLM router (Frontier, Balanced, Fast) with Gate + Judge inference.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -16,17 +16,28 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup && tsc --emitDeclarationOnly",
+    "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "test": "tsx --test tests/*.test.ts",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/imayushsawant/Axon.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "llm",
+    "router",
+    "openai",
+    "anthropic",
+    "gemini",
+    "sdk"
+  ],
+  "author": "Ayush Sawant",
   "license": "ISC",
+  "engines": {
+    "node": ">=18"
+  },
   "type": "module",
   "bugs": {
     "url": "https://github.com/imayushsawant/Axon/issues"
@@ -35,7 +46,8 @@
   "devDependencies": {
     "@types/node": "^26.5.0",
     "tsup": "^8.5.1",
-    "typescript": "^7.0.2"
+    "tsx": "^4.23.13",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "@tanstack/ai": "^0.53.0",

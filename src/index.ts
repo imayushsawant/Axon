@@ -2,6 +2,7 @@ import { Axon as AxonEngine } from "./router.js";
 import type {
   AxonConfig,
   FailedStage,
+  HealthOptions,
   HealthStatus,
   InferContext,
   InferDegraded,
@@ -17,6 +18,7 @@ import type {
 export type {
   AxonConfig,
   FailedStage,
+  HealthOptions,
   HealthStatus,
   InferContext,
   InferDegraded,
@@ -59,7 +61,7 @@ export class Axon {
     return this.#engine.infer(prompt, asInferOptions(optionsOrContext));
   }
 
-  health(): Promise<HealthStatus> {
-    return this.#engine.health();
+  health(options?: HealthOptions): Promise<HealthStatus> {
+    return this.#engine.health(options);
   }
 }

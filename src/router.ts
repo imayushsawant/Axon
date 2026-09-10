@@ -16,6 +16,7 @@ import {
 import type {
   AxonConfig,
   FailedStage,
+  HealthOptions,
   HealthStatus,
   InferContext,
   InferDegraded,
@@ -308,7 +309,34 @@ export class Axon {
     );
   }
 
-  async health(): Promise<HealthStatus> {
-    return this.snapshotHealth();
+  private async probeTier(tier: ModelTier): Promise<string> {
+    const structural = structuralTierStatus(this.config.tiers[tier]);
+    if (structural !== "ok") {
+      return structural;
+    }
+
+    const result = await this.completeTier(tier, { prompt: "ping" });
+    this.recordOutcome(tier, result);
+    return result.ok ? "ok" : result.status;
+  }
+
+  async health(options?: HealthOptions): Promise<HealthStatus> {
+    if (options?.live !== true) {
+      return this.snapshotHealth();
+    }
+
+    const [frontier, balanced, fast] = await Promise.all([
+      this.probeTier("frontier"),
+      this.probeTier("balanced"),
+      this.probeTier("fast"),
+    ]);
+
+    const byTier = { frontier, balanced, fast } as const;
+    return {
+      frontier,
+      balanced,
+      fast,
+      fallback: byTier[this.config.fallbackTier],
+    };
   }
 }
