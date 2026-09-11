@@ -1,4 +1,17 @@
-import { Axon as AxonEngine } from "./router.js";
+import type {
+  GateFail,
+  GateFailReason,
+  GatePass,
+  GateResult,
+} from "./classifier/heuristics.js";
+import type {
+  Ambiguity,
+  BlastRadius,
+  JudgeFailure,
+  ReasoningDepth,
+  RubricRating,
+} from "./classifier/rubric.js";
+import { Axon as AxonEngine, type RoutingDecision } from "./router.js";
 import type {
   AxonConfig,
   FailedStage,
@@ -16,8 +29,14 @@ import type {
 } from "./types.js";
 
 export type {
+  Ambiguity,
   AxonConfig,
+  BlastRadius,
   FailedStage,
+  GateFail,
+  GateFailReason,
+  GatePass,
+  GateResult,
   HealthOptions,
   HealthStatus,
   InferContext,
@@ -26,8 +45,12 @@ export type {
   InferResult,
   InferStopped,
   InferSuccess,
+  JudgeFailure,
   ModelTier,
   PriorMessage,
+  ReasoningDepth,
+  RoutingDecision,
+  RubricRating,
   TierConfig,
 };
 
@@ -45,13 +68,20 @@ function asInferOptions(
 
 /**
  * Public Axon SDK. Developers configure tiers (and optional Judge / fallback)
- * and call `infer()`. Classification, providers, and metrics stay internal.
+ * and call `infer()` or `classify()`. Provider and metrics internals stay private.
  */
 export class Axon {
   #engine: AxonEngine;
 
   constructor(config: AxonConfig) {
     this.#engine = new AxonEngine(config);
+  }
+
+  classify(
+    prompt: string,
+    optionsOrContext?: InferOptions | InferContext,
+  ): Promise<RoutingDecision> {
+    return this.#engine.classify(prompt, asInferOptions(optionsOrContext));
   }
 
   infer(

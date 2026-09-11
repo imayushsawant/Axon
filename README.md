@@ -19,7 +19,7 @@ prompt
 
 If the chosen model fails, Axon tries the configured **fallback tier**, except when the Judge marked the work as **irreversible** and Frontier itself failed. Then inference stops and the integrating app decides what the end user sees.
 
-Gate, Judge, and provider internals are not part of the public API. The surface is `new Axon(config)`, `infer()`, and `health()`.
+Provider internals are not part of the public API. The surface is `new Axon(config)`, `infer()`, `classify()`, and `health()`.
 
 ## Install
 
@@ -53,6 +53,26 @@ if ("needsConfirmation" in result) {
 ```
 
 `judge` is optional. `fallbackTier` is one of the three tiers, not a fourth model.
+
+`classify(prompt)` runs Gate + Judge only (no completion on the allocated tier). It returns `allocatedTier`, `source` (`gate` | `judge` | `judge_failed`), and Judge axes when the Judge succeeded.
+
+## Eval
+
+Measure routing quality with a labeled CSV you supply. Do not treat unaudited or AI-generated axis labels as ground truth for per-axis agreement.
+
+1. Copy `eval/prompts.template.csv` and fill `prompt, category, expected_tier, audited, human_*`. Axis columns are optional; leave them blank on Gate-only rows.
+2. `cp .env.example .env` and set `AXON_JUDGE_MODEL` / `AXON_JUDGE_API_KEY`.
+3. `npm run build` then:
+
+```bash
+npm run eval -- --input eval/prompts.csv
+```
+
+The harness calls **`dist/` `classify()`**, appends each row to a results CSV (resume-safe; `--fresh` overwrites), writes a sidecar `.meta.json` with Judge model and timestamps, and prints:
+
+- Overall tier-match rate (target ≥ 80%)
+- Gate-decided vs Judge-decided tier-match
+- Per-axis agreement only where `audited=yes` **and** the row produced live Judge axes
 
 ## Context
 
@@ -163,4 +183,4 @@ Default health checks empty keys and missing `baseURL`, plus failures already se
 
 ## Status
 
-v0.1.0 on npm. Routing quality vs a labeled eval set is the next step; this repo is the SDK, not a dashboard.
+v0.1.1 on npm. Use the eval harness in `eval/` against a labeled CSV to measure routing quality.

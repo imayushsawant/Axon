@@ -1,6 +1,6 @@
 {
   "name": "axon-llmrouter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "SDK-based multi-tier LLM router (Frontier, Balanced, Fast) with Gate + Judge inference.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -17,8 +17,9 @@
   ],
   "scripts": {
     "build": "tsup",
-    "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p eval/tsconfig.json",
+    "test": "tsx --test eval/harness.test.ts",
+    "eval": "tsx eval/run.ts",
     "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },
   "repository": {
