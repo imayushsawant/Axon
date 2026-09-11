@@ -1,6 +1,25 @@
 # Axon
 
-In-process TypeScript SDK that routes a prompt to **Frontier**, **Balanced**, or **Fast**. A Gate (heuristics) may send trivial work to Fast; otherwise a Judge model rates axes and a lookup table picks the tier.
+npm: `[axon-llmrouter](https://www.npmjs.com/package/axon-llmrouter)`
+
+Axon is a TypeScript SDK that runs in-process and **picks a model for each prompt**. Configuration defines three tiers: expensive/capable (**Frontier**), mid (**Balanced**), and cheap/fast (**Fast**). Call `infer()` and Axon routes simple work away from Frontier.
+
+Axon does not host models. API keys are supplied by the integrating application (OpenAI, Anthropic, Gemini, or any OpenAI-compatible endpoint).
+
+## How it decides
+
+```
+prompt
+  → Gate (cheap heuristics)
+      if it looks trivial → Fast, skip the Judge
+      otherwise → Judge (a small LLM rates the prompt on four axes)
+  → lookup table → Frontier | Balanced | Fast
+  → call that tier’s model
+```
+
+If the chosen model fails, Axon tries the configured **fallback tier**, except when the Judge marked the work as **irreversible** and Frontier itself failed. Then inference stops and the integrating app decides what the end user sees.
+
+Gate, Judge, and provider internals are not part of the public API. The surface is `new Axon(config)`, `infer()`, and `health()`.
 
 ## Install
 
@@ -8,7 +27,7 @@ In-process TypeScript SDK that routes a prompt to **Frontier**, **Balanced**, or
 npm install axon-llmrouter
 ```
 
-## Configure
+Requires Node 18+.
 
 ```ts
 import { Axon } from "axon-llmrouter";
@@ -19,13 +38,48 @@ const axon = new Axon({
     balanced: { model: "claude-sonnet-4-5", apiKey: process.env.ANTHROPIC_API_KEY! },
     fast: { model: "claude-haiku-4-5", apiKey: process.env.ANTHROPIC_API_KEY! },
   },
-  // Optional. Defaults to the Fast tier model.
-  judge: { model: "gemini-2.5-flash", apiKey: process.env.GOOGLE_API_KEY! },
+  judge: { model: "gemini-2.5-flash", apiKey: process.env.GOOGLE_API_KEY! }, // optional; defaults to Fast
   fallbackTier: "balanced",
+});
+
+const result = await axon.infer("fix the spelling in this title");
+
+if ("needsConfirmation" in result) {
+  // No model answer. Use result.failedReason. result.response is not model text.
+} else {
+  result.response; // model text
+  result.tier;     // "frontier" | "balanced" | "fast"
+}
+```
+
+`judge` is optional. `fallbackTier` is one of the three tiers, not a fourth model.
+
+## Context
+
+```ts
+await axon.infer("rewrite this function", {
+  priorMessages: [{ role: "user", content: "earlier turn" }],
+  codeContext: "function foo() {}",
+  metadata: { requestId: "abc" },
 });
 ```
 
-OpenAI-compatible / unknown model IDs need `baseURL`:
+Chosen-tier (and fallback) completion gets **prompt + priorMessages + codeContext**. `metadata` is not sent to the model.
+
+Pass context as a flat object (above) or as `{ context: { priorMessages, codeContext, metadata } }`.
+
+## Providers (v1)
+
+
+| Model string                                              | Adapter                                |
+| --------------------------------------------------------- | -------------------------------------- |
+| `gpt-*`, `o1` / `o3` / `o4`, `chatgpt-*`, or `openai/...` | OpenAI                                 |
+| `claude-*` or `anthropic/...`                             | Anthropic                              |
+| `gemini-*` or `gemini/...`                                | Gemini                                 |
+| anything else                                             | OpenAI-compatible (`baseURL` required) |
+
+
+OpenAI-compatible / unknown model IDs need baseURL:
 
 ```ts
 frontier: {
@@ -35,30 +89,11 @@ frontier: {
 }
 ```
 
-`fallbackTier` is one of the three tiers, not a fourth model.
+Custom provider plugins are not supported in v1.
 
-## Supported providers (v1)
+## What `infer()` returns
 
-- **OpenAI** — `gpt-*`, `o1` / `o3` / `o4`, `chatgpt-*`, or `openai/...`
-- **Anthropic** — `claude-*` or `anthropic/...`
-- **Gemini** — `gemini-*` or `gemini/...`
-- **OpenAI-compatible** — any other model id, **requires** `baseURL`
 
-Custom provider adapters are not part of v1.
-
-## `infer()`
-
-```ts
-const result = await axon.infer("fix the spelling in this title", {
-  priorMessages: [{ role: "user", content: "earlier turn" }],
-  codeContext: "const title = 'Helo'",
-  metadata: { requestId: "abc" },
-});
-```
-
-You can also pass `{ context: { priorMessages, codeContext, metadata } }`.
-
-Chosen-tier (and fallback) completion gets **prompt + priorMessages + codeContext**. `metadata` is not sent to the model.
 
 ### Success
 
@@ -71,6 +106,8 @@ Chosen-tier (and fallback) completion gets **prompt + priorMessages + codeContex
   usedFallback: false
 }
 ```
+
+
 
 ### Degraded (Judge or allocated tier failed, fallback answered)
 
@@ -85,6 +122,8 @@ Chosen-tier (and fallback) completion gets **prompt + priorMessages + codeContex
   failedReason
 }
 ```
+
+
 
 ### Stopped (no model answer)
 
@@ -101,25 +140,27 @@ This happens when:
   needsConfirmation: true,
   allocatedTier,
   failedStage,
-  failedReason,  // why the last model call failed — use this
+  failedReason,  // why the last model call failed
   usedFallback: false,
   response       // developer-facing note, not model output
 }
 ```
 
-Handle keys, outages, and end-user messaging yourself. Do not show `response` as if it were the model’s answer.
+The integrating app handles keys, outages, and end-user messaging. Do not show `response` as if it were the model's answer.
 
 `costSaved` / `latencySaved` are **hardcoded experimental per-tier tables**, not live token usage.
 
-## `health()`
-
-Structural by default (empty `apiKey`, missing `baseURL` for openai-compatible). Also includes status cached from a prior `infer()` live failure.
+## Health
 
 ```ts
 await axon.health();
-// { frontier, balanced, fast, fallback } e.g. "ok" | "failed: invalid key"
+// { frontier, balanced, fast, fallback } → "ok" or "failed: invalid key" / "failed: missing baseURL"
+
+await axon.health({ live: true }); // real API calls to the three tiers; costs money
 ```
 
-`health({ live: true })` sends a tiny completion to frontier, balanced, and fast (real API calls and cost). Tiers that already fail structurally are not probed. `fallback` copies the fallback tier’s result. Judge is not a separate health field.
+Default health checks empty keys and missing `baseURL`, plus failures already seen during `infer()`. The constructor does not ping the network.
 
-The constructor does not ping the network.
+## Status
+
+v0.1.0 on npm. Routing quality vs a labeled eval set is the next step; this repo is the SDK, not a dashboard.
