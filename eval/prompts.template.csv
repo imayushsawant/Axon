@@ -1,3 +1,8 @@
 prompt,category,context,expected_tier,human_blast_radius,human_irreversibility,human_reasoning_depth,human_ambiguity
-"what is the point of cron job in this project?",clean_heuristic,false,fast,,,,
-"when on /result, if the user is not logged in then show register and login buttons",gate_context_veto,true,balanced,Medium,false,Medium,Clear
+reword the header text,clean_heuristic,false,fast,Low,no,Low,Clear
+upgrade my code to multiboot 2 so I can use UEFI and then run tests,near_miss,true,frontier,Medium,no,High,Clear
+"this is what we are going to make, do a PROJECT.MD with milestones for the entire codebase",denylist_veto,true,frontier,High,no,High,Clear
+fix the bug in the website,judge_ambiguity_unclear,false,frontier,Medium,no,Medium,Unclear
+fix the null pointer exception on line 42 of index.js by adding a fallback value,judge_ambiguity_clear,true,fast,Low,no,Low,Clear
+"when on /result, if the user is not logged in then show register and login buttons",judge_ambiguity_clear,false,balanced,Medium,no,Low,Clear
+what is the point of cron job in this project?,near_miss,true,fast,Low,no,Medium,Clear
