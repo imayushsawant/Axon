@@ -58,21 +58,21 @@ if ("needsConfirmation" in result) {
 
 ## Eval
 
-Measure routing quality with a labeled CSV you supply. Do not treat unaudited or AI-generated axis labels as ground truth for per-axis agreement.
+Measure routing quality with a labeled CSV you supply. Axis labels are optional; treat them as indicative, not audited ground truth.
 
-1. Copy `eval/prompts.template.csv` and fill `prompt, category, expected_tier, audited, human_*`. Axis columns are optional; leave them blank on Gate-only rows.
-2. `cp .env.example .env` and set `AXON_JUDGE_MODEL` / `AXON_JUDGE_API_KEY`.
+1. Copy `eval/prompts.template.csv` and fill `prompt, category, context, expected_tier, human_*`. `context` is `true` if the prompt would include project files, tagged code, or older chat; `false` otherwise. Axis columns may be blank.
+2. `cp .env.example .env` and set `AXON_JUDGE_MODEL` / `AXON_JUDGE_API_KEY`. For an OpenAI-compatible host, also set `AXON_JUDGE_BASE_URL` and use that host’s catalog id as-is (Groq: `openai/gpt-oss-120b`). A non-empty `baseURL` sends `gpt-*` / `openai/...` through the compatible adapter instead of api.openai.com.
 3. `npm run build` then:
 
 ```bash
 npm run eval -- --input eval/prompts.csv
 ```
 
-The harness calls **`dist/` `classify()`**, appends each row to a results CSV (resume-safe; `--fresh` overwrites), writes a sidecar `.meta.json` with Judge model and timestamps, and prints:
+The harness calls **`dist/` `classify()`**. Rows with `context=true` are classified with a marker `InferContext` so Gate's `context_or_code` veto can fire. Results append to a CSV (resume-safe; `--fresh` overwrites), a sidecar `.meta.json` records Judge model and timestamps, and the report prints:
 
 - Overall tier-match rate (target ≥ 80%)
 - Gate-decided vs Judge-decided tier-match
-- Per-axis agreement only where `audited=yes` **and** the row produced live Judge axes
+- Per-axis agreement only where `human_*` labels are present **and** the row produced live Judge axes
 
 ## Context
 
@@ -93,13 +93,13 @@ Pass context as a flat object (above) or as `{ context: { priorMessages, codeCon
 
 | Model string                                              | Adapter                                |
 | --------------------------------------------------------- | -------------------------------------- |
-| `gpt-*`, `o1` / `o3` / `o4`, `chatgpt-*`, or `openai/...` | OpenAI                                 |
+| `gpt-*`, `o1` / `o3` / `o4`, `chatgpt-*`, or `openai/...` | OpenAI, unless `baseURL` is set        |
 | `claude-*` or `anthropic/...`                             | Anthropic                              |
 | `gemini-*` or `gemini/...`                                | Gemini                                 |
-| anything else                                             | OpenAI-compatible (`baseURL` required) |
+| anything else, or any of the above with `baseURL`         | OpenAI-compatible (`baseURL` required) |
 
 
-OpenAI-compatible / unknown model IDs need baseURL:
+OpenAI-compatible hosts need `baseURL`. With `baseURL` set, `gpt-*` and `openai/...` use that host (not api.openai.com) and the model string is sent as-is — keep `openai/` if the catalog requires it (`openai/gpt-oss-120b` on Groq). Without `baseURL`, those names use official OpenAI.
 
 ```ts
 frontier: {

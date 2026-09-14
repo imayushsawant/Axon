@@ -103,7 +103,7 @@ export function structuralTierStatus(config: TierConfig): string {
   if (config.apiKey.trim() === "") {
     return "failed: invalid key";
   }
-  if (resolveProviderId(config.model) === "openai-compatible") {
+  if (resolveProviderId(config.model, config.baseURL) === "openai-compatible") {
     if (config.baseURL === undefined || config.baseURL.trim() === "") {
       return "failed: missing baseURL";
     }

@@ -1,5 +1,18 @@
 /** RFC 4180-ish CSV helpers. Prompts may contain commas, quotes, and newlines. */
 
+export function csvColumn(row: Record<string, string>, name: string): string {
+  if (Object.prototype.hasOwnProperty.call(row, name)) {
+    return row[name] ?? "";
+  }
+  const target = name.toLowerCase();
+  for (const [key, value] of Object.entries(row)) {
+    if (key.toLowerCase() === target) {
+      return value ?? "";
+    }
+  }
+  return "";
+}
+
 export function parseCsv(text: string): Record<string, string>[] {
   const input = text.replace(/^\uFEFF/, "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
   const rows = splitCsvRows(input);

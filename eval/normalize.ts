@@ -10,9 +10,16 @@ export function normalizeTier(value: string): ModelTier | undefined {
   return undefined;
 }
 
-export function isAudited(value: string): boolean {
+/** true/false flags from CSV (`context`, irreversibility-style cells). */
+export function normalizeBool(value: string): boolean | undefined {
   const v = value.trim().toLowerCase();
-  return v === "yes" || v === "y" || v === "true" || v === "1";
+  if (v === "true" || v === "yes" || v === "y" || v === "1") {
+    return true;
+  }
+  if (v === "false" || v === "no" || v === "n" || v === "0") {
+    return false;
+  }
+  return undefined;
 }
 
 export function normalizeAxisLabel(value: string): string | undefined {

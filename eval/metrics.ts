@@ -1,9 +1,4 @@
-import {
-  isAudited,
-  normalizeAxisLabel,
-  normalizeIrreversibility,
-  normalizeTier,
-} from "./normalize.js";
+import { normalizeAxisLabel, normalizeIrreversibility, normalizeTier } from "./normalize.js";
 
 export type ResultRow = Record<string, string>;
 
@@ -102,19 +97,18 @@ export function computeMetrics(rows: ResultRow[]): EvalMetrics {
       }
     }
 
-    const audited = isAudited(row.audited ?? "");
-    const escalatedToJudge = decidedBy === "judge" || decidedBy === "judge_failed";
-    if (!audited || !escalatedToJudge || decidedBy !== "judge") {
+    if (decidedBy !== "judge") {
       continue;
     }
 
-    axisRows += 1;
+    let scoredAxis = false;
 
     const blast = axisMatch(
       normalizeAxisLabel(row.human_blast_radius ?? ""),
       normalizeAxisLabel(row.judge_blast_radius ?? ""),
     );
     if (blast !== undefined) {
+      scoredAxis = true;
       blastTotal += 1;
       if (blast) {
         blastMatch += 1;
@@ -124,6 +118,7 @@ export function computeMetrics(rows: ResultRow[]): EvalMetrics {
     const humanIrr = normalizeIrreversibility(row.human_irreversibility ?? "");
     const judgeIrr = normalizeIrreversibility(row.judge_irreversibility ?? "");
     if (humanIrr !== undefined && judgeIrr !== undefined) {
+      scoredAxis = true;
       irrTotal += 1;
       if (humanIrr === judgeIrr) {
         irrMatch += 1;
@@ -135,6 +130,7 @@ export function computeMetrics(rows: ResultRow[]): EvalMetrics {
       normalizeAxisLabel(row.judge_reasoning_depth ?? ""),
     );
     if (depth !== undefined) {
+      scoredAxis = true;
       depthTotal += 1;
       if (depth) {
         depthMatch += 1;
@@ -146,10 +142,15 @@ export function computeMetrics(rows: ResultRow[]): EvalMetrics {
       normalizeAxisLabel(row.judge_ambiguity ?? ""),
     );
     if (ambiguity !== undefined) {
+      scoredAxis = true;
       ambTotal += 1;
       if (ambiguity) {
         ambMatch += 1;
       }
+    }
+
+    if (scoredAxis) {
+      axisRows += 1;
     }
   }
 
@@ -187,7 +188,7 @@ export function formatMetricsReport(metrics: EvalMetrics): string {
     `Judge-decided tier-match: ${formatRate(metrics.judge)}`,
     `Judge-failed rows: ${formatRate(metrics.judge_failed)}`,
     `Classify errors: ${metrics.errors}`,
-    `Per-axis agreement (audited=yes AND Judge live output only; ${metrics.axis_agreement_row_count} rows):`,
+    `Per-axis agreement (human_* labels AND Judge live output only; ${metrics.axis_agreement_row_count} rows):`,
     `  blast_radius: ${formatRate(metrics.axis_agreement.blast_radius)}`,
     `  irreversibility: ${formatRate(metrics.axis_agreement.irreversibility)}`,
     `  reasoning_depth: ${formatRate(metrics.axis_agreement.reasoning_depth)}`,

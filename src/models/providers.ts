@@ -170,18 +170,29 @@ function inferNativeProvider(model: string): ProviderId | undefined {
   return undefined;
 }
 
-export function resolveProviderId(model: string): ProviderId {
+function hasBaseURL(baseURL?: string): boolean {
+  return baseURL !== undefined && baseURL.trim() !== "";
+}
+
+export function resolveProviderId(model: string, baseURL?: string): ProviderId {
   const trimmed = model.trim();
   const slash = trimmed.indexOf("/");
   if (slash > 0) {
     const prefix = trimmed.slice(0, slash).toLowerCase();
     if (NATIVE_PROVIDERS.has(prefix) || adapterFactories.has(prefix)) {
+      if (prefix === "openai" && hasBaseURL(baseURL)) {
+        return "openai-compatible";
+      }
       return prefix;
     }
-    return resolveProviderId(trimmed.slice(slash + 1));
+    return resolveProviderId(trimmed.slice(slash + 1), baseURL);
   }
 
-  return inferNativeProvider(trimmed) ?? "openai-compatible";
+  const inferred = inferNativeProvider(trimmed) ?? "openai-compatible";
+  if (inferred === "openai" && hasBaseURL(baseURL)) {
+    return "openai-compatible";
+  }
+  return inferred;
 }
 
 function resolveModelName(model: string, providerId: ProviderId): string {
@@ -370,7 +381,7 @@ export async function complete(
   request: CompleteRequest,
   bindings: ProviderBindings = defaultBindings,
 ): Promise<ProviderResult> {
-  const providerId = resolveProviderId(config.model);
+  const providerId = resolveProviderId(config.model, config.baseURL);
 
   if (providerId === "openai-compatible") {
     if (config.baseURL === undefined || config.baseURL.trim() === "") {

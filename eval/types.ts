@@ -16,6 +16,12 @@ export type AxonConfig = {
   fallbackTier: ModelTier;
 };
 
+export type InferContext = {
+  priorMessages?: { role: string; content: string }[];
+  codeContext?: string;
+  metadata?: Record<string, unknown>;
+};
+
 export type ClassifyDecision =
   | {
       allocatedTier: "fast";

@@ -1,1 +1,3 @@
-prompt,category,expected_tier,audited,human_blast_radius,human_irreversibility,human_reasoning_depth,human_ambiguity
+prompt,category,context,expected_tier,human_blast_radius,human_irreversibility,human_reasoning_depth,human_ambiguity
+"what is the point of cron job in this project?",clean_heuristic,false,fast,,,,
+"when on /result, if the user is not logged in then show register and login buttons",gate_context_veto,true,balanced,Medium,false,Medium,Clear

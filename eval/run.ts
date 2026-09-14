@@ -17,12 +17,18 @@ import { appendFile, mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { loadAxonEvalConfig, loadDotEnv, type JudgeRunConfig } from "./config.js";
-import { csvHeaderLine, parseCsv, stringifyCsvRow, completedRowIndexes } from "./csv.js";
+import { csvColumn, csvHeaderLine, parseCsv, stringifyCsvRow, completedRowIndexes } from "./csv.js";
 import { computeMetrics, formatMetricsReport, type EvalMetrics } from "./metrics.js";
-import { boolToCsv, normalizeTier } from "./normalize.js";
-import type { AxonConfig, ClassifyDecision } from "./types.js";
+import { boolToCsv, normalizeBool, normalizeTier } from "./normalize.js";
+import type { AxonConfig, ClassifyDecision, InferContext } from "./types.js";
 
 const REPO_ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
+
+/** Marker context so Gate's context_or_code veto fires when CSV `context=true`. */
+export const EVAL_ATTACHED_CONTEXT: InferContext = {
+  priorMessages: [{ role: "user", content: "[eval] older chat context is attached" }],
+  codeContext: "[eval] project files / tagged code are attached",
+};
 
 export const OUTPUT_COLUMNS = [
   "row_index",
@@ -32,7 +38,7 @@ export const OUTPUT_COLUMNS = [
   "actual_tier",
   "decided_by",
   "pass",
-  "audited",
+  "context",
   "human_blast_radius",
   "human_irreversibility",
   "human_reasoning_depth",
@@ -58,7 +64,7 @@ function usage(): string {
   return `Axon eval harness
 
 Required:
-  --input <path>     Labeled CSV (prompt, category, expected_tier, audited, human_* axes)
+  --input <path>     Labeled CSV (prompt, category, context, expected_tier, human_* axes)
 
 Optional:
   --output <path>    Results CSV (default: eval/results/eval-<timestamp>.csv)
@@ -149,7 +155,7 @@ function rowFromDecision(
   elapsedMs: number,
   error: string,
 ): Record<string, string> {
-  const expected = input.expected_tier ?? "";
+  const expected = csvColumn(input, "expected_tier");
   const actual = decision?.allocatedTier ?? "";
   const expectedTier = normalizeTier(expected);
   const actualTier = normalizeTier(actual);
@@ -160,17 +166,17 @@ function rowFromDecision(
 
   const row: Record<string, string> = {
     row_index: String(rowIndex),
-    prompt: input.prompt ?? "",
-    category: input.category ?? "",
+    prompt: csvColumn(input, "prompt"),
+    category: csvColumn(input, "category"),
     expected_tier: expected,
     actual_tier: actual,
     decided_by: decision?.source ?? "",
     pass: pass ? "true" : "false",
-    audited: input.audited ?? "",
-    human_blast_radius: input.human_blast_radius ?? "",
-    human_irreversibility: input.human_irreversibility ?? "",
-    human_reasoning_depth: input.human_reasoning_depth ?? "",
-    human_ambiguity: input.human_ambiguity ?? "",
+    context: csvColumn(input, "context"),
+    human_blast_radius: csvColumn(input, "human_blast_radius"),
+    human_irreversibility: csvColumn(input, "human_irreversibility"),
+    human_reasoning_depth: csvColumn(input, "human_reasoning_depth"),
+    human_ambiguity: csvColumn(input, "human_ambiguity"),
     judge_blast_radius: "",
     judge_irreversibility: "",
     judge_reasoning_depth: "",
@@ -257,7 +263,7 @@ export async function runEval(options: CliOptions): Promise<EvalMetrics> {
 
   const { Axon } = (await import(pathToFileURL(distPath).href)) as {
     Axon: new (config: AxonConfig) => {
-      classify: (prompt: string) => Promise<ClassifyDecision>;
+      classify: (prompt: string, context?: InferContext) => Promise<ClassifyDecision>;
     };
   };
   const { config, judge } = loadAxonEvalConfig();
@@ -269,12 +275,18 @@ export async function runEval(options: CliOptions): Promise<EvalMetrics> {
     throw new Error(`No data rows in ${options.input}`);
   }
   for (const [i, row] of inputs.entries()) {
-    if ((row.prompt ?? "").trim() === "") {
+    if (csvColumn(row, "prompt").trim() === "") {
       throw new Error(`Row ${i + 1} is missing prompt`);
     }
-    if (normalizeTier(row.expected_tier ?? "") === undefined) {
+    const expectedTier = csvColumn(row, "expected_tier");
+    if (normalizeTier(expectedTier) === undefined) {
       throw new Error(
-        `Row ${i + 1} has invalid expected_tier "${row.expected_tier ?? ""}" (use frontier|balanced|fast)`,
+        `Row ${i + 1} has invalid expected_tier "${expectedTier}" (use frontier|balanced|fast)`,
+      );
+    }
+    if (normalizeBool(csvColumn(row, "context")) === undefined) {
+      throw new Error(
+        `Row ${i + 1} has invalid context "${csvColumn(row, "context")}" (use true|false)`,
       );
     }
   }
@@ -322,7 +334,11 @@ export async function runEval(options: CliOptions): Promise<EvalMetrics> {
     let decision: ClassifyDecision | undefined;
     let error = "";
     try {
-      decision = await axon.classify(input.prompt ?? "");
+      const wantsContext = normalizeBool(csvColumn(input, "context")) === true;
+      decision = await axon.classify(
+        csvColumn(input, "prompt"),
+        wantsContext ? EVAL_ATTACHED_CONTEXT : undefined,
+      );
     } catch (err) {
       error = err instanceof Error ? err.message : String(err);
     }

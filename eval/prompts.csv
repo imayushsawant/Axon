@@ -1,0 +1,1229 @@
+prompt,category,Context,expected_tier,human_blast_radius,human_irreversibility,human_reasoning_depth,human_ambiguity
+"There is a lot of Issues in the chat UI, when i sent it a message, then the app starts generating the response, after the response is completed i see a  below the response, then it is gone, and sometimes the response just disappears after the completion, then i need to refresh the page to see the response",severity_row10,TRUE,Frontier,Medium,no,medium,clear
+"I want you to analyze the complete chat frontend, backend, how the llm is getting the context about the rag and tools and find the issues and fix them",severity_row18,TRUE,Frontier,High,no,high,unclear
+"1. the current skeleton of the navbar of the workspace isnt matching the current nav bar, so fix it by implementing modifying the skeleton according to the current navbar of the workspace.
+2. The landing page isnt accessible if the user is logged in. It should be accessible for the user even if he is loggedin. So instead of showing ""Try Flux"", if the user is logged in show ""Open App"", and in the navbar show the user avatar same as the shown on the dashboard.
+3. On the landing page, if i am using the dark theme, i still can still see the moon icon (not clickable), instead of the sun icon, then i need to refresh the page, then i can see the sun icon and then it becomes clickable.
+
+Do the tasks one by one",severity_row9,TRUE,Balanced,Medium,no,medium,clear
+"On clicking on the create artifact tools cards there is a animation, please remove that, also remove any kind of click animation from the navbar. Dont change the theme change animation.
+The button send button on the prompt input box looks too awful when there is no text in the workspace, and when a response is being generated, it should into white colour with a black box in it to stop the response, and also make the button circular.
+
+When there is no source added, on the chat section we can see the card with text ""Add your first source ?
+
+Import a PDF, web page, YouTube video, or note
+
+""
+From that card there is a icon, which has a background, please remove and make the icon bigger, remove click animation.",severity_row9,TRUE,Balanced,Medium,no,medium,clear
+"the similar click animations is ther on multiple places, i want you to remove them:
+1. When the sources panel is empty, there is a add sources button, remove the animation from it.
+2. Settings button from the navbar of workspace.
+3. On the landing page navbar, login and try flux button, and the try flux cta button, Get started for free button
+
+Also when i am logged in i go to the landing page, and i still see the try flux button rather than the open app buttons, them i need to refresh the page, and then i can see them",severity_row7,TRUE,Balanced,Medium,no,low,clear
+also remove the click animation on the three dot menu button on the workspace card which opens the dropdown menu on the dashboard,severity_row1,TRUE,Fast,Low,no,low,clear
+"Build a Simple Local Whisper Transcription App
+I want you to build a simple local transcription web app for Windows 11 using whisper.cpp as the transcription engine and a React frontend as the UI.
+My machine
+OS: Windows 11
+GPU: NVIDIA GeForce RTX 3050 Laptop GPU
+GPU VRAM: 6 GB
+RAM: 24 GB
+We want to use CUDA/GPU acceleration where possible.
+Everything should run locally. Audio must not be sent to any cloud API.
+Goal
+Build the simplest useful version first.
+Architecture:
+React Web App | | HTTP request v whisper.cpp whisper-server | v Whisper model | v Local transcription
+The React app should communicate with the locally running whisper-server.
+Do NOT introduce unnecessary infrastructure.
+Tech stack
+Frontend:
+React
+Vite
+TypeScript
+Plain CSS or a very lightweight CSS approach
+No Next.js
+No Redux
+No database
+No authentication
+No backend framework unless absolutely required
+No Electron
+No Docker
+Transcription:
+Official whisper.cpp
+CUDA acceleration for the NVIDIA GPU
+Start with the Whisper small model
+Use the official whisper.cpp model/download mechanism where appropriate.
+Official repository:
+[https://github.com/ggml-org/whisper.cpp](https://github.com/ggml-org/whisper.cpp)
+UI requirements
+Create a very simple, clean single-page interface.
+Something approximately like:
++--------------------------------------------------+ | Local Whisper | | Private local transcription | | | | ?????????????????????????????????????????????? | | ? ? | | ? Drop audio file here ? | | ? or ? | | ? [Choose File] ? | | ? ? | | ?????????????????????????????????????????????? | | | | File: meeting.mp3 | | | | Language: [ Auto ? ] [ Transcribe ] | | | | ????????????????????????????????????????????? | | | | Transcript | | | | Hello, this is the transcription... | | | | [Copy] [Download] | +--------------------------------------------------+
+Features for v1
+Implement only these features:
+1. Upload audio
+Allow the user to select an audio file.
+Initially support common formats such as:
+WAV
+MP3
+M4A
+MP4 if whisper.cpp/server supports it through its FFmpeg setup
+Do not build a complicated media-processing pipeline.
+2. Transcribe button
+When clicked:
+Send the audio to the local whisper-server.
+Show a loading state.
+Disable the button while transcription is running.
+Display the returned transcript.
+The UI should clearly indicate:
+Transcribing...
+3. Language selection
+Provide:
+Auto English Hindi Marathi
+Also leave the implementation easy to extend with additional Whisper languages later.
+If Auto is selected, allow Whisper to detect the language.
+4. Transcript display
+Display the transcript in a readable text area/panel.
+Allow:
+Copy to clipboard
+Download as .txt
+5. Error handling
+Handle common errors gracefully:
+whisper-server is not running
+unsupported audio file
+transcription failure
+network/request failure
+empty response
+For example:
+Could not connect to whisper-server. Make sure the local Whisper server is running on http://localhost:8080
+Do not show raw stack traces to the user.
+whisper.cpp integration
+Assume the local whisper-server runs on:
+http://localhost:8080
+However, do not hard-code the URL throughout the application.
+Create a small configuration constant such as:
+const WHISPER_SERVER_URL = ""http://localhost:8080"";
+Keep this in one place so it can easily be changed later.
+Before implementing the API integration, inspect the current official whisper.cpp server API/documentation and use the correct endpoint and request format for the version being installed.
+Do not guess the API.
+CORS
+Because the React development server and whisper-server may run on different ports, handle CORS correctly.
+Prefer the simplest solution.
+Do not introduce a backend proxy unless the whisper-server configuration makes it necessary.
+Explain how to configure whisper-server for the React development server if required.
+Project structure
+Keep it simple.
+Something similar to:
+local-whisper/ ? ??? frontend/ ? ??? src/ ? ? ??? App.tsx ? ? ??? App.css ? ? ??? main.tsx ? ??? package.json ? ??? ... ? ??? whisper/ ? ??? models/ ? ??? ... ? ??? scripts/ ? ??? start-whisper.bat ? ??? README.md
+You can modify the structure if there is a simpler/better approach.
+Do not over-engineer it.
+Windows setup
+The final project should be easy to run on Windows 11.
+Create a simple:
+start-whisper.bat
+that starts the local whisper server with:
+the correct model
+CUDA/GPU acceleration
+port 8080
+Also provide a simple command for starting the React frontend.
+Ideally the workflow should become:
+Terminal 1
+start-whisper.bat
+Terminal 2
+npm install npm run dev
+Then open the displayed localhost URL.
+If you can make a single Windows .bat launcher that starts both services without adding unnecessary complexity, that's welcome, but it is optional.
+Model
+Use:
+Whisper small
+Do not automatically download multiple models.
+Explain where the model is stored.
+Make it easy to change later to:
+tiny base small medium large
+without restructuring the application.
+GPU
+Because this machine has:
+NVIDIA RTX 3050 Laptop GPU 6 GB VRAM
+use the CUDA-enabled whisper.cpp build/configuration.
+Do not assume the user's CUDA version.
+First inspect the current NVIDIA driver/CUDA compatibility if necessary.
+If compilation is required, clearly document the prerequisites and commands.
+Prefer an official/prebuilt whisper.cpp Windows CUDA binary if one is available and suitable.
+Do not install the entire CUDA Toolkit unless it is actually required.
+Privacy requirement
+The application must be local-first.
+The README should explicitly state:
+Audio is processed locally by whisper.cpp. No audio is uploaded to OpenAI or any other cloud service.
+Do not add analytics, telemetry, external APIs, or cloud services.
+UX
+Keep the UI intentionally simple.
+Use:
+centered layout
+clear typography
+large upload area
+obvious Transcribe button
+simple loading indicator
+readable transcript
+Copy button
+Download button
+Do not spend time building a sophisticated design system.
+Important implementation rule
+Before writing code:
+Check the current official whisper.cpp documentation.
+Determine the correct Windows CUDA build/setup.
+Determine the current whisper-server API.
+Determine the correct model download mechanism.
+Then implement the React integration.
+Do not rely on outdated blog posts or guessed whisper.cpp commands.
+Deliverables
+I want you to produce:
+1. Complete React application
+All source files required to run it.
+2. whisper.cpp setup instructions
+Exact Windows commands.
+3. Model installation instructions
+Exact command/download procedure for the small model.
+4. Server startup script
+Create:
+start-whisper.bat
+5. README
+The README must contain:
+prerequisites
+installation
+model setup
+whisper-server setup
+CUDA/GPU setup
+starting the server
+starting React
+troubleshooting
+architecture overview
+6. Test procedure
+Give me a simple test:
+1. Start whisper-server 2. Start React 3. Open localhost URL 4. Upload test.mp3 5. Select Auto 6. Click Transcribe 7. Verify transcript
+Scope control
+This is important.
+For v1, DO NOT implement:
+user accounts
+database
+cloud APIs
+OpenAI API
+authentication
+payments
+multi-user support
+transcription history
+Redis
+queues
+WebSockets
+Docker
+Electron
+complicated state management
+fancy animations
+production deployment
+automatic model switching
+speaker diarization
+translation
+summaries
+AI chat
+We can add those later if needed.
+The priority is:
+Get local Whisper transcription working reliably with a simple React UI.
+Final response
+After implementing everything, give me:
+The final project structure.
+Exact commands to install/run it on Windows 11.
+Any prerequisites I need to install.
+How to verify CUDA/GPU acceleration is actually being used.
+Any known limitations.
+A short explanation of how the React app communicates with whisper.cpp.
+If you encounter an issue with the whisper.cpp API or Windows CUDA setup, investigate the current official documentation/source rather than inventing a workaround.",severity_row17,FALSE,Frontier,High,no,high,clear
+"Previously the application was using[icon.svg](file;file:///d%3A/Code/flux/app/icon.svg) , But now it should[icon.png](file;file:///d%3A/Code/flux/app/icon.png) , Show remove icon.svg, Also update this file[logo.tsx](file;file:///d%3A/Code/flux/components/ui/logo.tsx)
+
+[favicon.ico](file;file:///d%3A/Code/flux/app/favicon.ico)[apple-icon.png](file;file:///d%3A/Code/flux/app/apple-icon.png) , Also remove these and use icon png for Favicon and Apple icon",severity_row1,TRUE,Fast,Low,no,low,clear
+"The icon in the nav bar is looking small as compared to the previous icon, So can you just try to make it bigger And tell me how are you going to do it are you going to increase the size from the And tell me how are you going to do it are you going to increase the size from the navbar, or directly [logo.tsx](file;file:///d%3A/Code/flux/components/ui/logo.tsx)",severity_row1,TRUE,Fast,Low,no,low,clear
+Are we using the same navbar on the landing page on the dashboard and on the workspace Just tell me yes or no Because we should use only one One single nivbar Which may will make it look more consistent Because there are a bit of alignment issues So just tell me first before writing any kind of code,severity_row1,TRUE,Fast,Low,no,low,clear
+remove expanding animation from the logo,severity_row1,TRUE,Fast,Low,no,low,clear
+Write API Docs in a Readme file,severity_row9,FALSE,Balanced,Medium,no,medium,clear
+"As a senior software engineer, please conduct a thorough review of this codebase, evaluating the overall architecture, folder structure, and adherence to best practices. Provide actionable feedback on potential improvements, scalability, and maintainability.",severity_row17,FALSE,Frontier,High,no,high,clear
+"You are now taking over an already completed frontend of a production Next.js application.
+
+The frontend UI and UX are already implemented and should be treated as **approved and frozen**.
+
+Your job is to **audit and optimize the existing frontend for performance, scalability, reliability, maintainability, and frontend system design quality**, while preserving the existing product experience exactly.
+
+I am not deeply experienced with frontend engineering, so do not assume I know what should be optimized. You are responsible for identifying problems, explaining their impact, and implementing the appropriate improvements.
+
+# NON-NEGOTIABLE CONSTRAINT
+
+## Do not change the UI or UX
+
+The existing UI and UX are approved.
+
+Do NOT change:
+
+* Layout
+* Visual design
+* Typography
+* Colors
+* Spacing
+* Component appearance
+* Navigation behavior
+* User flows
+* Copy/content
+* Interaction patterns
+* Responsive behavior
+* Animations unless an existing animation is directly causing a performance problem and can be optimized without changing its behavior
+* Routes or URLs unless technically necessary and backward compatible
+
+Do not redesign components.
+
+Do not ""improve"" the design.
+
+Do not replace the existing design system.
+
+Do not introduce visual trends.
+
+**The goal is to make the existing frontend faster and architecturally stronger without the user noticing any visual or behavioral difference.**
+
+---
+
+# Phase 1: Complete audit first
+
+Before modifying code, perform a comprehensive audit of the entire frontend.
+
+Do NOT immediately start making changes.
+
+Inspect:
+
+* Next.js version
+* App Router / Pages Router architecture
+* React version
+* TypeScript configuration
+* Build configuration
+* Package dependencies
+* Route structure
+* Server Components
+* Client Components
+* API calls
+* Server Actions
+* Route Handlers
+* Data fetching libraries
+* Caching
+* Authentication
+* Authorization
+* Middleware
+* Context providers
+* Global state
+* Local state
+* URL state
+* Forms
+* Tables
+* Lists
+* Images
+* Fonts
+* Static assets
+* Third-party scripts
+* Analytics
+* Error handling
+* Loading states
+* Suspense usage
+* Dynamic imports
+* Bundle composition
+* Duplicate dependencies
+* Large dependencies
+* Repeated computations
+* Repeated API calls
+* Waterfalls
+* Unnecessary re-renders
+* Client/server boundaries
+* Serialization between server and client
+* Environment variables
+* Browser storage
+* WebSocket/SSE usage if present
+* Polling if present
+* Prefetching
+* Pagination
+* Infinite scrolling
+* Search/filter requests
+* Mutation handling
+* Cache invalidation
+* Optimistic updates
+* Error retries
+* Race conditions
+* Request cancellation
+* Memory leaks
+* Event listeners
+* Timers
+* Subscriptions
+* Cleanup behavior
+
+Also inspect the backend API contracts from the frontend perspective.
+
+Do not rewrite backend code unless absolutely necessary and explicitly justified.
+
+---
+
+# API PERFORMANCE AUDIT
+
+This is one of the highest priorities.
+
+Trace **every API call** through the application.
+
+For each request, determine:
+
+* Where it originates
+* Whether it runs on the server or browser
+* How frequently it runs
+* What triggers it
+* Whether it can run more than once unnecessarily
+* Whether multiple components request the same data
+* Whether requests are sequential when they could be parallel
+* Whether data is fetched too early
+* Whether data is fetched too late
+* Whether data is fetched that is never used
+* Whether responses are larger than necessary
+* Whether caching is possible
+* Whether revalidation is appropriate
+* Whether deduplication is occurring
+* Whether requests can be combined
+* Whether pagination should be used
+* Whether filtering should happen server-side
+* Whether search requests should be debounced
+* Whether stale requests can be cancelled
+* Whether retry behavior is appropriate
+* Whether mutations invalidate the correct data
+* Whether authentication headers/cookies are handled efficiently
+* Whether API calls cause unnecessary client-side waterfalls
+
+Look specifically for patterns such as:
+
+* `useEffect` ? API call ? state update
+* Multiple `useEffect` hooks fetching related data
+* Parent and child fetching the same resource
+* Identical requests made by multiple components
+* API calls triggered by every render
+* API calls triggered by unstable dependencies
+* Requests triggered unnecessarily when a component mounts
+* Requests repeated after navigation
+* Requests that could be performed on the server
+* Sequential requests that can be parallelized
+* Search requests firing on every keystroke
+* Fetching entire collections when only a subset is needed
+* Refetching data that is already available
+* Cache invalidation that is too broad
+* Cache invalidation that is missing
+* Unnecessary polling
+* Requests continuing after navigation
+* Race conditions between requests
+* Duplicate mutation submissions
+
+---
+
+# Next.js DATA FETCHING ARCHITECTURE
+
+Evaluate whether each piece of data belongs in:
+
+* Server Component data fetching
+* Client-side fetching
+* Server Actions
+* Route Handlers
+* Existing data-fetching library
+* Cached server request
+* Request-level memoization
+* Client cache
+
+Use the architecture that best fits the existing application.
+
+Do not blindly convert everything to Server Components.
+
+Do not blindly convert everything to client-side fetching.
+
+Make decisions based on:
+
+* Data freshness
+* Interactivity
+* Authentication
+* Personalization
+* Cacheability
+* Request frequency
+* Payload size
+* Rendering requirements
+
+---
+
+# SERVER VS CLIENT COMPONENT AUDIT
+
+Identify components marked `""use client""` unnecessarily.
+
+Where safe, move logic back to Server Components.
+
+However, do not do this simply to reduce client components.
+
+Preserve existing behavior.
+
+Pay particular attention to:
+
+* Large client component trees
+* Providers wrapping the entire application
+* Client components importing large libraries
+* Client components receiving large serialized props
+* Components containing only static rendering but marked client
+* Client-side API calls that could safely happen on the server
+
+Minimize the client-side JavaScript footprint.
+
+---
+
+# RENDERING STRATEGY
+
+For every major route, determine whether the current rendering strategy is appropriate:
+
+* Static
+* Cached dynamic
+* Revalidated
+* Fully dynamic
+* Client-rendered
+
+Look for opportunities to reduce unnecessary server work and browser work.
+
+Do not sacrifice correctness or freshness simply to make benchmarks look better.
+
+---
+
+# CACHING STRATEGY
+
+Audit all caching behavior.
+
+Determine:
+
+* What should be cached
+* What should not be cached
+* Cache duration
+* Revalidation strategy
+* Request deduplication
+* Cache invalidation
+* Mutation invalidation
+* User-specific data isolation
+* Authentication-sensitive data
+
+Be extremely careful with authenticated or user-specific data.
+
+**Never introduce a cache that could accidentally expose one user's data to another user.**
+
+For mutations, verify that affected cached data is invalidated or refreshed correctly.
+
+Avoid both:
+
+* Over-fetching
+* Stale-data bugs
+
+---
+
+# REACT PERFORMANCE
+
+Audit unnecessary React rendering.
+
+Look for:
+
+* Parent components causing large subtrees to rerender
+* Unstable object/array/function props
+* Unnecessary context updates
+* Overly broad contexts
+* State located too high in the tree
+* Derived state stored unnecessarily
+* Expensive calculations during render
+* Large lists rendered without virtualization where appropriate
+* Components doing too much work
+* Repeated transformations of large datasets
+
+Use `useMemo`, `useCallback`, and `React.memo` **only when they solve an actual performance problem**.
+
+Do not add memoization everywhere.
+
+Avoid premature optimization.
+
+---
+
+# LARGE LISTS AND DATA-DENSE UI
+
+Inspect:
+
+* Tables
+* Search results
+* Activity feeds
+* Lists
+* Dropdowns
+* Select components
+* Autocomplete
+* Large menus
+
+Determine whether:
+
+* Pagination
+* Server-side filtering
+* Virtualization
+* Incremental loading
+* Smaller payloads
+
+would materially improve performance.
+
+Do not change the UI behavior unless the existing implementation is technically incapable of handling realistic data volumes.
+
+If virtualization is introduced, preserve the exact existing visual behavior.
+
+---
+
+# JAVASCRIPT BUNDLE OPTIMIZATION
+
+Analyze the client bundle.
+
+Identify:
+
+* Large dependencies
+* Duplicate dependencies
+* Dependencies used only in one place
+* Client-only libraries unnecessarily loaded globally
+* Heavy charting libraries
+* Heavy date libraries
+* Large editors
+* Large icon packages
+* Unused utilities
+* Polyfills
+* Unnecessary imports
+
+Use:
+
+* Tree-shaking-friendly imports
+* Dynamic imports where appropriate
+* Lazy loading for genuinely non-critical functionality
+* Server-side execution where appropriate
+
+Do not replace dependencies purely for theoretical bundle savings.
+
+Any dependency replacement must preserve functionality and stability.
+
+---
+
+# IMAGES AND STATIC ASSETS
+
+Audit:
+
+* Image dimensions
+* Image formats
+* Next/Image usage
+* Responsive image sizing
+* Priority loading
+* Lazy loading
+* Above-the-fold images
+* Unused assets
+* Oversized assets
+
+Do not change how images visually appear.
+
+Optimize delivery, not design.
+
+---
+
+# FONTS
+
+Audit font loading.
+
+Look for:
+
+* Unnecessary font weights
+* Unused font families
+* Blocking font behavior
+* Duplicate font loading
+* Incorrect preload usage
+* External font requests that can be avoided
+
+Preserve the existing typography exactly.
+
+---
+
+# THIRD-PARTY SCRIPTS
+
+Audit:
+
+* Analytics
+* Tracking
+* Chat widgets
+* Monitoring
+* Marketing scripts
+* Payment providers
+* Maps
+* Other third-party JavaScript
+
+Determine whether each script is:
+
+* Necessary
+* Loaded at the correct time
+* Loaded only on relevant routes
+* Blocking rendering
+* Executed unnecessarily
+
+Do not remove functionality without confirmation.
+
+---
+
+# NETWORK OPTIMIZATION
+
+Analyze the network waterfall.
+
+Look for:
+
+* Request chains
+* Waterfalls
+* Duplicate requests
+* Large payloads
+* Slow API calls
+* Requests blocking rendering
+* Unnecessary preloads
+* Missing caching
+* Over-fetching
+
+Where possible:
+
+* Parallelize independent requests
+* Avoid unnecessary round trips
+* Fetch only required data
+* Reuse existing data
+* Cancel obsolete requests
+* Defer non-critical work
+
+---
+
+# FORMS AND MUTATIONS
+
+Audit every important mutation.
+
+Check:
+
+* Duplicate submissions
+* Loading states
+* Error handling
+* Retry behavior
+* Optimistic updates
+* Cache invalidation
+* Race conditions
+* Request cancellation where appropriate
+* Server-side validation
+* Client-side validation duplication
+* Unnecessary refetching after mutation
+
+Do not change the form UI.
+
+---
+
+# ERROR HANDLING AND RESILIENCE
+
+Review:
+
+* Error boundaries
+* Route-level errors
+* API failures
+* Network failures
+* Authentication expiration
+* Authorization failures
+* Invalid data
+* Unexpected backend responses
+* Retry behavior
+
+The frontend should fail gracefully without creating inconsistent state.
+
+Do not hide real errors.
+
+Do not add generic error swallowing.
+
+---
+
+# MEMORY LEAK AUDIT
+
+Search for:
+
+* Event listeners without cleanup
+* Timers without cleanup
+* Subscriptions without cleanup
+* WebSocket connections without cleanup
+* Observers without cleanup
+* AbortController opportunities
+* Long-lived references
+* Unmounted components updating state
+* Persistent global listeners
+
+Fix genuine leaks.
+
+---
+
+# ACCESSIBILITY AND PERFORMANCE
+
+Preserve existing accessibility.
+
+Do not remove semantic HTML or accessibility behavior for performance.
+
+Performance optimizations must not create:
+
+* inaccessible controls
+* missing labels
+* broken keyboard navigation
+* invisible focus states
+* incorrect loading announcements
+
+---
+
+# SECURITY
+
+While optimizing, also audit frontend security.
+
+Look for:
+
+* Sensitive data unnecessarily exposed to client components
+* Secrets accidentally included in client bundles
+* Unsafe HTML rendering
+* Unsafe URL handling
+* Token storage issues
+* Sensitive API responses unnecessarily persisted in browser storage
+* Cache leakage
+* Authorization assumptions made only on the client
+
+Do not treat frontend authorization as a replacement for backend authorization.
+
+---
+
+# OBSERVABILITY
+
+If the application already has monitoring or analytics, preserve it.
+
+Where useful, improve instrumentation for:
+
+* API failures
+* Slow requests
+* Client errors
+* Important performance bottlenecks
+
+Do not add unnecessary analytics.
+
+Do not collect new user data merely for optimization.
+
+---
+
+# CODE QUALITY
+
+During optimization, also identify architectural problems that materially affect performance or maintainability.
+
+Improve:
+
+* Repeated API logic
+* Duplicate data transformation
+* Inconsistent error handling
+* Inconsistent caching
+* Excessive prop drilling
+* Poor component boundaries
+* Unnecessary global state
+* Repeated utility logic
+
+However:
+
+**Do not perform a giant refactor just because the code could theoretically be cleaner.**
+
+Every architectural change should have a clear reason.
+
+---
+
+# PERFORMANCE MEASUREMENT
+
+Before making major changes, establish a baseline where possible.
+
+Measure or inspect:
+
+* Build output
+* Bundle sizes
+* Route-level JavaScript
+* Server rendering behavior
+* API request count
+* API request waterfall
+* Largest payloads
+* Client rendering work
+* Core Web Vitals where measurable
+* Lighthouse metrics where useful
+* Time to first byte where measurable
+* Largest Contentful Paint
+* Interaction to Next Paint
+* Cumulative Layout Shift
+* Total Blocking Time
+
+Do not optimize purely based on intuition.
+
+Where a tool is unavailable, clearly state what could not be measured.
+
+---
+
+# Prioritization
+
+Classify findings as:
+
+### Critical
+
+Issues that can cause:
+
+* Major performance degradation
+* Data leakage
+* Broken caching
+* Excessive API traffic
+* Memory leaks
+* Severe rendering problems
+* Security problems
+
+### High
+
+Issues with meaningful performance or architectural impact.
+
+### Medium
+
+Useful optimizations with moderate impact.
+
+### Low
+
+Minor cleanup or theoretical improvements.
+
+Prioritize changes by **real-world impact**, not by how impressive the code change looks.
+
+---
+
+# Implementation process
+
+After the audit, produce a concise report containing:
+
+1. Overall architecture assessment
+2. Biggest performance problems
+3. API problems
+4. Rendering problems
+5. Bundle problems
+6. Caching problems
+7. React problems
+8. Network problems
+9. Security concerns
+10. Recommended optimization order
+11. Expected impact
+12. Risks
+
+Then begin implementing the improvements.
+
+## Important
+
+Do not make hundreds of unrelated changes at once.
+
+Implement changes in **small, logically grouped batches**.
+
+For each batch:
+
+1. Explain what you are changing.
+2. Explain why.
+3. Make the code changes.
+4. Run lint/typecheck/build/tests as appropriate.
+5. Verify that the existing UI and UX have not changed.
+6. Report what improved.
+7. Move to the next batch.
+
+If a change could potentially alter UI or UX, stop and explain the risk before implementing it.
+
+---
+
+# API optimization priority
+
+Give especially high priority to reducing unnecessary API traffic.
+
+The ideal architecture should ensure:
+
+* One logical piece of data is not fetched repeatedly without reason
+* Independent requests run in parallel
+* Shared data is reused
+* Search is appropriately debounced
+* Obsolete requests are cancelled
+* Mutations invalidate only what they need to invalidate
+* Cache behavior is intentional
+* User-specific data is never incorrectly shared
+* Large datasets are paginated or otherwise bounded
+* Client-side fetching is used only where it makes sense
+* Server-side fetching is used where it provides a real advantage
+* Request waterfalls are minimized
+* The browser does not repeatedly fetch data it already has
+
+---
+
+# Important restraint
+
+Do not optimize for code golf.
+
+Do not make the code harder to understand for a tiny theoretical performance improvement.
+
+Do not add abstractions merely because they are ""best practice.""
+
+Do not introduce a new state-management or data-fetching library unless the existing architecture genuinely cannot solve the problem effectively.
+
+Do not rewrite working code without a measurable or architectural reason.
+
+Do not change the visual design.
+
+Do not change the UX.
+
+Do not change product behavior unless the current behavior is demonstrably incorrect or harmful to performance, and even then preserve the user's expected experience.
+
+---
+
+# Final goal
+
+The finished application should:
+
+* Look exactly like the existing approved product
+* Feel exactly the same to users
+* Make fewer unnecessary API requests
+* Load less JavaScript
+* Render more efficiently
+* Avoid unnecessary network waterfalls
+* Cache data correctly
+* Handle mutations correctly
+* Have resilient data fetching
+* Minimize unnecessary client-side work
+* Be easier to maintain
+* Be safer
+* Scale better as the dataset and user base grow
+* Follow sound modern Next.js and React architecture
+
+Most importantly:
+
+**Do not confuse ""best frontend system design"" with rewriting everything.**
+
+Understand the existing system first, identify the actual bottlenecks, and then make the smallest high-impact changes that improve it.
+
+## Start now
+
+**Do Phase 1 only.**
+
+Audit the existing frontend thoroughly.
+
+Do not modify code yet.
+
+After the audit, give me the findings, prioritized recommendations, and the first implementation batch you recommend.
+
+Wait for approval before making the first code changes.",severity_row17,TRUE,Frontier,High,no,high,clear
+I want to add a analytics feature For this application. So just find where we can add the analytics and how we can add it. Also it should match the existing design and theme of the application and Make sure that it has graphs and all And make sure to follow best practises of next js and write production ready and maintainable code But before plan the feature explore the code base a bit,severity_row18,TRUE,Frontier,High,no,high,unclear
+"remove the pulsating green dot in frontend of ""looking for internship roles"" in hero and add replace it with available for software engineering roles",severity_row1,TRUE,Fast,Low,no,low,clear
+"I want to modify or redesign this portfolio website completely:
+Some things i surely want to do:
+1. As this website is following a restricter layout pattern, i want to increase bit of a width.
+2. Make it anmiated and add subtle and cool animations, using motion
+3. Create a seperate page for projects, About, Skills.
+4. The Projects page should follow a grid pattern, and each project is having a seperate dedicated page which has all the information about the project, like its screenshot, live link, github link, Some information about it, its architecture diagrams. or anything else we can add
+5. The github heatmap, i want to improve it its looking generic, i want to make it clean
+
+And basically i want to completely redesign the portfolio website. It should not look generic, AI generated(no purple gradients, no heavy glass morhpism). It must be clean, aesthetic.
+
+You have complete freedom to modify the codebase, Use any libraries. Full Freedom
+
+Dont jump to write the code, lets discuss first, i need your opinions, i want to make it the best, you also suggest me some things, you suggest me better things that we can do.",severity_row18,TRUE,Frontier,High,no,high,unclear
+Alright then implement the 404 page og image generation And I'll add the screenshots later of the project Also update the site map Update the Read me Okay do what you want to do with the micro animation on the nerve brand And also do hero background texture,severity_row10,TRUE,Frontier,Medium,no,medium,unclear
+"Remove the dot grid background completely, and then improve the dark theme",severity_row8,TRUE,Balanced,Medium,no,low,unclear
+"I want you to fix my code, follow production ready practices, fix the models, signup controller, and also make sure that i would be able to make a post request ticketing.dev/api/auth/signup, to create account, i have already edited the windows hosts file, also structure my overall code, proper folder structure",severity_row17,TRUE,Frontier,High,no,high,clear
+"I want you to take a look at my complete code, makse sure its following production ready industry grade practices, i dont want you to modify the kubernetes stuff, you can modify the express stuff, and i guess i am messing up with some error handling stuff, i know the routes and their controllers are incomplete, dont complete them yet, neither add a db connection, i to send standardized error messages, so just analyze my code, and make fixes",severity_row11,TRUE,Frontier,Medium,no,high,clear
+"i cant see my frontend at posts.com, it gives me error, ""503 Service Temporarily Unavailable
+nginx"", i have already edited the windows hosts, posts.com/, and http://posts.com/posts/ works,
+fix it for me",severity_row9,TRUE,Balanced,Medium,no,medium,clear
+"when on /result, if the user is not logged in then show register and login button and if registered then show a cta taking them to dashboard",severity_row3,FALSE,Fast,Low,no,medium,clear
+what is the point of cron job in this project?,severity_row4,TRUE,Balanced,low,no,medium,unclear
+when i clear cookies when logged in then it starts showing loading and stays stuck for so long ,severity_row10,TRUE,Frontier,Medium,no,medium,unclear
+"add the loading screen when someone clicks google oauth and is waiting till being redirected to google page. it feels like that click didnt register
+",severity_row1,TRUE,Fast,Low,no,low,clear
+"""Change the button color on the profile page's settings tab from blue to green.""",severity_row1,TRUE,Fast,Low,no,low,clear
+Update the color of the button we discussed to match the new palette.,severity_row2,TRUE,Balanced,Low,No,Low,unclear
+use README.md,clean_heuristic,FALSE,Fast,Low,no,low,clear
+follow README.md,clean_heuristic,FALSE,Fast,Low,no,low,clear
+lets pick up android.md,clean_heuristic,FALSE,Fast,Low,no,low,clear
+read BENTO_FOLIO.MD,clean_heuristic,FALSE,Fast,Low,no,low,clear
+convert this to python,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+reword the header text,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+translate this to Spanish,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+define the setup procedure,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+show the output,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+run the test suite,clean_heuristic,FALSE,Fast,Low,no,low,clear
+check the compile status,clean_heuristic,FALSE,Fast,Low,no,low,clear
+add a simple readme,clean_heuristic,FALSE,Fast,Low,no,low,clear
+use settings.yaml,clean_heuristic,FALSE,Fast,Low,no,low,clear
+follow README.md,clean_heuristic,FALSE,Fast,Low,no,low,clear
+lets pick up android.md,clean_heuristic,FALSE,Fast,Low,no,low,clear
+read BENTO_FOLIO.MD,clean_heuristic,FALSE,Fast,Low,no,low,clear
+convert this to python,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+reword the header text,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+upgrade my code to multiboot 2 so I can use UEFI and then run tests,near_miss,TRUE,Frontier,Medium,no,high,clear
+"see PLAN, do v0.2.0, implement more tests, and also fix the main compiler loop",near_miss,TRUE,Frontier,Medium,no,high,clear
+This is the code for Linux v3.0.1 so read README first then install this skill,near_miss,TRUE,Balanced,Medium,no,medium,clear
+write a bun backend that uses the databases and then add the humanizer skill,near_miss,TRUE,Frontier,High,no,high,unclear
+install this skill https://github.com/blader/humanizer.git and check status,near_miss,TRUE,Balanced,Medium,no,medium,clear
+upgrade my code to multiboot 2 so I can use UEFI and then run tests,near_miss,TRUE,Frontier,Medium,no,high,clear
+"see PLAN, do v0.2.0, implement more tests, and also fix the main compiler loop",near_miss,TRUE,Frontier,Medium,no,high,clear
+This is the code for Linux v3.0.1 so read README first then install this skill,near_miss,TRUE,Balanced,Medium,no,medium,clear
+write a bun backend that uses the databases and then add the humanizer skill,near_miss,TRUE,Frontier,High,no,high,unclear
+install this skill https://github.com/blader/humanizer.git and check status,near_miss,TRUE,Balanced,Medium,no,medium,clear
+upgrade my code to multiboot 2 so I can use UEFI and then run tests,near_miss,TRUE,Frontier,Medium,no,high,clear
+"see PLAN, do v0.2.0, implement more tests, and also fix the main compiler loop",near_miss,TRUE,Frontier,Medium,no,high,clear
+This is the code for Linux v3.0.1 so read README first then install this skill,near_miss,TRUE,Balanced,Medium,no,medium,clear
+write a bun backend that uses the databases and then add the humanizer skill,near_miss,TRUE,Frontier,High,no,high,unclear
+install this skill https://github.com/blader/humanizer.git and check status,near_miss,TRUE,Balanced,Medium,no,medium,clear
+upgrade my code to multiboot 2 so I can use UEFI and then run tests,near_miss,TRUE,Frontier,Medium,no,high,clear
+"see PLAN, do v0.2.0, implement more tests, and also fix the main compiler loop",near_miss,TRUE,Frontier,Medium,no,high,clear
+This is the code for Linux v3.0.1 so read README first then install this skill,near_miss,TRUE,Balanced,Medium,no,medium,clear
+"this is what we are going to make, do a PROJECT.MD with milestones for the entire codebase",denylist_veto,TRUE,Frontier,High,no,high,clear
+PLAN AND DO STAGE 1: change all variable names throughout the system,denylist_veto,TRUE,Frontier,High,no,high,clear
+PLAN and BUILD STAGE 4: check every single file in the project globally,denylist_veto,TRUE,Frontier,High,no,high,clear
+CREATE A CLAUDE.MD and a PLAN.MD for system-wide configuration throughout the repository,denylist_veto,TRUE,Frontier,High,no,high,clear
+verify throughout the entire codebase that all tests pass and every module works,denylist_veto,TRUE,Frontier,High,no,high,clear
+"this is what we are going to make, do a PROJECT.MD with milestones for the entire codebase",denylist_veto,TRUE,Frontier,High,no,high,clear
+PLAN AND DO STAGE 1: change all variable names throughout the system,denylist_veto,TRUE,Frontier,High,no,high,clear
+PLAN and BUILD STAGE 4: check every single file in the project globally,denylist_veto,TRUE,Frontier,High,no,high,clear
+CREATE A CLAUDE.MD and a PLAN.MD for system-wide configuration throughout the repository,denylist_veto,TRUE,Frontier,High,no,high,clear
+verify throughout the entire codebase that all tests pass and every module works,denylist_veto,TRUE,Frontier,High,no,high,clear
+"this is what we are going to make, do a PROJECT.MD with milestones for the entire codebase",denylist_veto,TRUE,Frontier,High,no,high,clear
+PLAN AND DO STAGE 1: change all variable names throughout the system,denylist_veto,TRUE,Frontier,High,no,high,clear
+PLAN and BUILD STAGE 4: check every single file in the project globally,denylist_veto,TRUE,Frontier,High,no,high,clear
+CREATE A CLAUDE.MD and a PLAN.MD for system-wide configuration throughout the repository,denylist_veto,TRUE,Frontier,High,no,high,clear
+verify throughout the entire codebase that all tests pass and every module works,denylist_veto,TRUE,Frontier,High,no,high,clear
+"this is what we are going to make, do a PROJECT.MD with milestones for the entire codebase",denylist_veto,TRUE,Frontier,High,no,high,clear
+PLAN AND DO STAGE 1: change all variable names throughout the system,denylist_veto,TRUE,Frontier,High,no,high,clear
+PLAN and BUILD STAGE 4: check every single file in the project globally,denylist_veto,TRUE,Frontier,High,no,high,clear
+make it use the PlusJakartaSans font and make it look better,severity_row2,FALSE,Balanced,Low,no,low,unclear
+fix the bug in the website,severity_row10,FALSE,Frontier,Medium,no,medium,unclear
+"it is broken, make it work",severity_row10,FALSE,Frontier,Medium,no,medium,unclear
+improve performance of the script,severity_row4,FALSE,Balanced,Low,no,medium,unclear
+optimize it to be much faster,severity_row4,FALSE,Balanced,Low,no,medium,unclear
+"fix error in compilation, it's not working",severity_row4,FALSE,Balanced,Low,no,medium,unclear
+make it use the PlusJakartaSans font and make it look better,severity_row2,FALSE,Balanced,Low,no,low,unclear
+fix the bug in the website,severity_row10,FALSE,Frontier,Medium,no,medium,unclear
+"it is broken, make it work",severity_row10,FALSE,Frontier,Medium,no,medium,unclear
+improve performance of the script,severity_row4,FALSE,Balanced,Low,no,medium,unclear
+optimize it to be much faster,severity_row4,FALSE,Balanced,Low,no,medium,unclear
+"fix error in compilation, it's not working",severity_row4,FALSE,Balanced,Low,no,medium,unclear
+make it use the PlusJakartaSans font and make it look better,severity_row2,FALSE,Balanced,Low,no,low,unclear
+fix the bug in the api,severity_row10,FALSE,Frontier,Medium,no,medium,unclear
+"it is broken, make it work",severity_row10,FALSE,Frontier,Medium,no,medium,unclear
+improve performance of the script,severity_row4,FALSE,Balanced,Low,no,medium,unclear
+optimize it to be much faster,severity_row4,FALSE,Balanced,Low,no,medium,unclear
+"fix error in compilation, it's not working",severity_row4,FALSE,Balanced,Low,no,medium,unclear
+fix the null pointer exception on line 42 of index.js by adding a fallback value,severity_row1,TRUE,Fast,Low,no,low,clear
+update the handleRequest function in server.py to return 400 when body is empty,severity_row1,TRUE,Fast,Low,no,low,clear
+replace the deprecated react lifecycle methods in component.jsx with useEffect hooks,severity_row9,TRUE,Balanced,Medium,no,medium,clear
+implement a retry mechanism with exponential backoff in client.go for api requests,severity_row9,TRUE,Balanced,Medium,no,medium,clear
+change the margin-top property in style.css to 15px for the header class,severity_row1,TRUE,Fast,Low,no,low,clear
+fix the null pointer exception on line 42 of index.js by adding a fallback value,severity_row1,TRUE,Fast,Low,no,low,clear
+update the handleRequest function in server.py to return 400 when body is empty,severity_row1,TRUE,Fast,Low,no,low,clear
+replace the deprecated react lifecycle methods in component.jsx with useEffect hooks,severity_row9,TRUE,Balanced,Medium,no,medium,clear
+implement a retry mechanism with exponential backoff in client.go for api requests,severity_row9,TRUE,Balanced,Medium,no,medium,clear
+change the margin-top property in style.css to 15px for the header class,severity_row1,TRUE,Fast,Low,no,low,clear
+fix the null pointer exception on line 42 of index.js by adding a fallback value,severity_row1,TRUE,Fast,Low,no,low,clear
+update the handleRequest function in server.py to return 400 when body is empty,severity_row1,TRUE,Fast,Low,no,low,clear
+replace the deprecated react lifecycle methods in component.jsx with useEffect hooks,severity_row9,TRUE,Balanced,Medium,no,medium,clear
+implement a retry mechanism with exponential backoff in client.go for api requests,severity_row9,TRUE,Balanced,Medium,no,medium,clear
+change the margin-top property in style.css to 15px for the header class,severity_row1,TRUE,Fast,Low,no,low,clear
+fix the null pointer exception on line 42 of index.js by adding a fallback value,severity_row1,TRUE,Fast,Low,no,low,clear
+update the handleRequest function in server.py to return 400 when body is empty,severity_row1,TRUE,Fast,Low,no,low,clear
+replace the deprecated react lifecycle methods in component.jsx with useEffect hooks,severity_row9,TRUE,Balanced,Medium,no,medium,clear
+can you show that context free languages are a strict superset of the linear languages,clean_heuristic,TRUE,Frontier,Low,no,high,clear
+go on,clean_heuristic,TRUE,Balanced,Low,no,low,unclear
+why is strict unlinked?,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+can we show NFA/DFA is strictly included in DPDA,clean_heuristic,FALSE,Frontier,Low,no,high,clear
+whats the status,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+your task is to tackle this open problem thoroughly,clean_heuristic,TRUE,Frontier,Medium,no,high,unclear
+work for at least 3 days,clean_heuristic,FALSE,Balanced,Low,no,medium,unclear
+write the status in STATUS.md,clean_heuristic,FALSE,Fast,Low,no,low,clear
+can I run leanstral 1.5 on this server,clean_heuristic,TRUE,Fast,Low,no,low,clear
+Give three tips for staying healthy.,clean_heuristic,FALSE,Fast,Low,no,low,clear
+What are the three primary colors?,clean_heuristic,FALSE,Fast,Low,no,low,clear
+Describe the structure of an atom.,clean_heuristic,FALSE,Fast,Low,no,low,clear
+How can we reduce air pollution?,clean_heuristic,FALSE,Fast,Low,no,medium,clear
+Identify the odd one out.,clean_heuristic,FALSE,Balanced,Low,no,low,unclear
+Render a 3D model of a house,clean_heuristic,FALSE,Fast,Low,no,medium,clear
+Evaluate this sentence for spelling and grammar mistakes,clean_heuristic,TRUE,Balanced,Low,no,low,unclear
+How did Julius Caesar die?,clean_heuristic,FALSE,Fast,Low,no,low,clear
+What is the capital of France?,clean_heuristic,FALSE,Fast,Low,no,low,clear
+Generate a list of ten items a person might need for a camping trip,clean_heuristic,FALSE,Fast,Low,no,low,clear
+Discuss the causes of the Great Depression,clean_heuristic,FALSE,Fast,Low,no,medium,clear
+"Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X)",near_miss,FALSE,Fast,Low,no,low,clear
+/goal goal <command-args>complete the membership-computability proof for CSLs and use it to show CSLs are a subset of Recursive languages</command-args>,near_miss,TRUE,Frontier,Low,no,high,clear
+make the just the docs theme light blue instead of lilac and add a link to the nav menu that points to the docs at https://nielstron.github.io/langlib/api/Langlib.html,near_miss,TRUE,Fast,Low,no,low,clear
+rewrite the computability predicates listed in the readme table using the predicates listed in Langlib/Utilities/ComputabilityPredicates.lean. mark the ones where the Langlib/Utilities/ComputabilityPredicates.lean definition does not easily follow from what is shown as non-proven  (remove the link),near_miss,FALSE,Frontier,Medium,no,high,clear
+The language used in Regular/Basics/NonRegular (anbn) should move into Regular/Examples/AnBn.lean (similar to in other classes) together with the proof that it is not regular. the proof in NonRegular is then just a thin wrapper,near_miss,TRUE,Balanced,Medium,no,medium,clear
+show that CSLs are not closed under substitution (update link in README) and show from that that CFL are strict subset of CSL (also in README),near_miss,TRUE,Frontier,Medium,no,high,clear
+you are the worlds best research in this topic. work on this for at least 8 hours before giving up,near_miss,TRUE,Frontier,Medium,no,high,unclear
+"feel free to first attempt finding a non-formal solution. if you consider the proof approach correct, proceed to formalization",near_miss,FALSE,Frontier,Low,no,high,unclear
+try extensively to disprove The ÄernÃ½ Conjecture. remember you are the world best research in formal language theory and work on this for at least 8 hours before concluding,near_miss,TRUE,Frontier,Medium,no,high,clear
+pick promising candidates from https://en.wikipedia.org/wiki/List_of_unsolved_problems_in_computer_science that permit  concise counterexamples or examples to prove/disprove the conjectures. focus on topics where one direction has received particularly little attention recently. work for at least 24h,near_miss,TRUE,Frontier,Medium,no,high,clear
+"set up grafana on this server, fine if only accessible via localhost. limit storage to 30 days or 10GB, whichever hits first",near_miss,TRUE,Balanced,Medium,no,medium,clear
+Imagine you are speaking with a customer who is unsatisfied with the product they bought from you. Construct a response that diffuses the situation.,near_miss,TRUE,Fast,Low,no,medium,clear
+Make a prediction about what will happen in the next paragraph.,near_miss,FALSE,Balanced,Low,no,low,unclear
+Make the second sentence shorter.,near_miss,FALSE,Balanced,Low,no,low,unclear
+"Given an array of integers, return the first repeating element.",near_miss,FALSE,Fast,Low,no,medium,clear
+"Calculate the amount of money in a bank account with an initial $100 deposit and an interest rate of 6%, compounded annually",near_miss,FALSE,Balanced,Low,no,medium,unclear
+"Follow the law of supply and demand, describe what would happen to the price of a good if the demand increased.",near_miss,FALSE,Fast,Low,no,low,clear
+"Given a set of eight numbers (1,2, 3, 4, 5, 6, 7, 8), generate a sentence that reflects their order.",near_miss,TRUE,Fast,Low,no,medium,clear
+What is the first rule of storytelling?,near_miss,FALSE,Fast,Low,no,low,clear
+Suppose that an employer asks for three years of working experience for an advertised job. Explain why the requirement is reasonable.,near_miss,TRUE,Fast,Low,no,medium,clear
+"Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to share test case and main code, so that changes in either side are synchronized. Extract and share code for this if necessary. --- project-doc --- This repository contains code for a language transpiler of smart contracts. It is therefore extremely important to write code that generalizes well and to *not* hardcode specific edge cases. ### Testing - First write tests that reflect diversely how the language is supposed to work and how not. - Check out other tests for language features (esp. test_misc.py) to see how tests are written. They define a program, compile it and then test its behavior against expectations, usually using property based tests. It is fine to start with a fixed example which gives faster feedback (PBT tend to time out when the behavior is violated, feel free to abort test generation) - The entire test suite takes > 20 minutes to execute. Only run it at the end, prefer individual relevant tests before. ### Adding features For language features - Make sure to familiarize yourself with the way the visitor pattern is used for basically everything in the repo. - There are three main steps for the compiler: normalization and optimization (in many individual steps in rewrite/ and optimize/), type inference (in type_inference.py) and transpilation (in compiler.py) - If you rewrite a feature into existing features, make sure that the existing features are actually supported already. For example, lambda expressions are not supported yet. For standard library tooling - All code in std/ and ledger/ is meant to be interpreted by the opshin compiler. Add code there if it is supposed to extend the standard library of the language Documentation is autogenerated from function comments. -",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/grammars <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to share test case and main code, so that changes in either side are synchronized. Extract and share code for this if necessary. --- project-doc --- ## Skills These skills are discovered at startup from multiple local sources. Each entry includes a name, description, and file path so you can open the source for full instructions. - lean4-theorem-proving: Use when developing Lean 4 proofs, facing type class synthesis errors, managing sorries/axioms, or searching mathlib - provides build-first workflow, instance management patterns (haveI/letI), and domain-specific tactics (file: $HOME/git/grammars/.codex/skills/lean4-theorem-proving/SKILL.md) - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) - Discovery: Available skills are listed in project docs and may also appear in a runtime ""## Skills"" section (name + description + file path). These are the sources of truth; skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Description as trigger: The YAML `description` in `SKILL.md` is the primary trigger signal; rely on it to decide applicability. If unsure, ask a brief clarification before proceeding. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deeply nested references; prefer one-hop files explicitly linked from `SKILL.md`. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/grammars4 <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to share test case and main code, so that changes in either side are synchronized. Extract and share code for this if necessary. --- project-doc --- ## Skills These skills are discovered at startup from multiple local sources. Each entry includes a name, description, and file path so you can open the source for full instructions. - lean4-theorem-proving: Use when developing Lean 4 proofs, facing type class synthesis errors, managing sorries/axioms, or searching mathlib - provides build-first workflow, instance management patterns (haveI/letI), and domain-specific tactics (file: $HOME/git/grammars4/.codex/skills/lean4-theorem-proving/SKILL.md) - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) - Discovery: Available skills are listed in project docs and may also appear in a runtime ""## Skills"" section (name + description + file path). These are the sources of truth; skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Description as trigger: The YAML `description` in `SKILL.md` is the primary trigger signal; rely on it to decide applicability. If unsure, ask a brief clarification before proceeding. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deeply nested references; prefer one-hop files explicitly linked from `SKILL.md`. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/streetdb <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to share test case and main code, so that changes in either side are synchronized. Extract and share code for this if necessary. --- project-doc --- ## Skills These skills are discovered at startup from multiple local sources. Each entry includes a name, description, and file path so you can open the source for full instructions. - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) - Discovery: Available skills are listed in project docs and may also appear in a runtime ""## Skills"" section (name + description + file path). These are the sources of truth; skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Description as trigger: The YAML `description` in `SKILL.md` is the primary trigger signal; rely on it to decide applicability. If unsure, ask a brief clarification before proceeding. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deeply nested references; prefer one-hop files explicitly linked from `SKILL.md`. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/streetdb/extract <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to share test case and main code, so that changes in either side are synchronized. Extract and share code for this if necessary. --- project-doc --- ## Skills These skills are discovered at startup from multiple local sources. Each entry includes a name, description, and file path so you can open the source for full instructions. - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) - Discovery: Available skills are listed in project docs and may also appear in a runtime ""## Skills"" section (name + description + file path). These are the sources of truth; skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Description as trigger: The YAML `description` in `SKILL.md` is the primary trigger signal; rely on it to decide applicability. If unsure, ask a brief clarification before proceeding. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deeply nested references; prefer one-hop files explicitly linked from `SKILL.md`. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/streetdb/web <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to share test case and main code, so that changes in either side are synchronized. Extract and share code for this if necessary. --- project-doc --- ## Skills These skills are discovered at startup from multiple local sources. Each entry includes a name, description, and file path so you can open the source for full instructions. - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) - Discovery: Available skills are listed in project docs and may also appear in a runtime ""## Skills"" section (name + description + file path). These are the sources of truth; skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Description as trigger: The YAML `description` in `SKILL.md` is the primary trigger signal; rely on it to decide applicability. If unsure, ask a brief clarification before proceeding. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deeply nested references; prefer one-hop files explicitly linked from `SKILL.md`. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/playground <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to share test case and main code, so that changes in either side are synchronized. Extract and share code for this if necessary. --- project-doc --- ## Skills These skills are discovered at startup from multiple local sources. Each entry includes a name, description, and file path so you can open the source for full instructions. - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) - Discovery: Available skills are listed in project docs and may also appear in a runtime ""## Skills"" section (name + description + file path). These are the sources of truth; skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Description as trigger: The YAML `description` in `SKILL.md` is the primary trigger signal; rely on it to decide applicability. If unsure, ask a brief clarification before proceeding. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deeply nested references; prefer one-hop files explicitly linked from `SKILL.md`. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/playground <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. --- project-doc --- ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/streetdb/web <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. --- project-doc --- ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/streetdb <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. --- project-doc --- ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/ogmios-python <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. --- project-doc --- ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/mathlib4 <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/cslib <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/python-memtools-orig <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/matheval <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/kona <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/AndroidStudioProjects/GreyscaleScheduler <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to synchronize test cases with main code, ideally make them share the same code. Externalize the code for this if necessary. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/AndroidStudioProjects/GreyscaleScheduler <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. You have access to the internet. Use it to look stuff up, especially look for packages that could implement helpers. Install packages if needed. Build frequently to check for errors. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+"# AGENTS.md instructions for $HOME/git/opshin <INSTRUCTIONS> Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. You have access to the internet. Use it to look stuff up, especially look for packages that could implement helpers. Install packages if needed. Build frequently to check for errors. ## Skills A skill is a set of local instructions to follow that is stored in a `SKILL.md` file. Below is the list of skills that can be used. Each entry includes a name, description, and file path so you can open the source for full instructions when using a specific skill. ### Available skills - skill-creator: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Codex's capabilities with specialized knowledge, workflows, or tool integrations. (file: $HOME/.codex/skills/.system/skill-creator/SKILL.md) - skill-installer: Install Codex skills into $CODEX_HOME/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos). (file: $HOME/.codex/skills/.system/skill-installer/SKILL.md) ### How to use skills - Discovery: The list above is the skills available in this session (name + description + file path). Skill bodies live on disk at the listed paths. - Trigger rules: If the user names a skill (with `$SkillName` or plain text) OR the task clearly matches a skill's description shown above, you must use that skill for that turn. Multiple mentions mean use them all. Do not carry skills across turns unless re-mentioned. - Missing/blocked: If a named skill isn't in the list or the path can't be read, say so briefly and continue with the best fallback. - How to use a skill (progressive disclosure): 1) After deciding to use a skill, open its `SKILL.md`. Read only enough to follow the workflow. 2) If `SKILL.md` points to extra folders such as `references/`, load only the specific files needed for the request; don't bulk-load everything. 3) If `scripts/` exist, prefer running or patching them instead of retyping large code blocks. 4) If `assets/` or templates exist, reuse them instead of recreating from scratch. - Coordination and sequencing: - If multiple skills apply, choose the minimal set that covers the request and state the order you'll use them. - Announce which skill(s) you're using and why (one short line). If you skip an obvious skill, say why. - Context hygiene: - Keep context small: summarize long sections instead of pasting them; only load extra files when needed. - Avoid deep reference-chasing: prefer opening only files directly linked from `SKILL.md` unless you're blocked. - When variants exist (frameworks, providers, domains), pick only the relevant reference file(s) and note that choice. - Safety and fallback: If a skill can't be applied cleanly (missing files, unclear instructions), state the issue, pick the next-best approach, and continue. </INSTRUCTIONS>",denylist_veto,TRUE,Balanced,High,no,medium,clear
+inspect the code closely. there are especially issues around inductives and other extensions to the kernel,severity_row18,TRUE,Frontier,High,no,high,unclear
+Describe a time when you had to make a difficult decision.,severity_row1,FALSE,Fast,Low,no,low,clear
+Reverse engineer this code to create a new version,severity_row12,TRUE,Frontier,Medium,no,high,unclear
+"Rewrite the given paragraph in a shorter, easier to understand form.",severity_row2,FALSE,Balanced,Low,no,low,unclear
+Create a dialog between two people who are discussing a scientific phenomenon,severity_row4,FALSE,Balanced,Low,no,medium,unclear
+Write a review of a recent movie you watched.,severity_row2,FALSE,Balanced,Low,no,low,unclear
+Create a Twitter post to promote your new product.,severity_row2,FALSE,Balanced,Low,no,low,unclear
+Rewrite the sentence to provide more clarity and flow.,severity_row2,FALSE,Balanced,Low,no,low,unclear
+Write a function to calculate the factorial of a given number.,severity_row1,FALSE,Fast,Low,no,low,clear
+Create a response for a customer's email about a refund issue.,severity_row4,FALSE,Balanced,Low,no,medium,unclear
+"Classify the given input as either a poem, story, or song.",severity_row2,FALSE,Balanced,Low,no,low,unclear
+Rewrite the given sentence in a more formal tone.,severity_row2,FALSE,Balanced,Low,no,low,unclear
+Write a few sentences about a given historical figure.,severity_row2,FALSE,Balanced,Low,no,low,unclear
+Compose a tweet that addresses the issue of environmental degradation.,severity_row1,TRUE,Fast,Low,no,low,clear
+"Write a short review for the novel ""The Catcher in the Rye"".",severity_row1,FALSE,Fast,Low,no,low,clear
+Classify the given article as either positive or negative sentiment.,severity_row2,FALSE,Balanced,Low,no,low,unclear
+What type of fruit would be a good addition to a fruit salad?,severity_row1,FALSE,Fast,Low,no,low,clear
+Describe in a few words what makes a good leader.,severity_row1,FALSE,Fast,Low,no,low,clear
+Create a sentence that employs a figure of speech.,severity_row1,TRUE,Fast,Low,no,low,clear
+Write a 250 word essay about Coral Reef Conservation,severity_row3,FALSE,Fast,Low,no,medium,clear
+"Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version.",severity_row1,TRUE,Fast,Low,no,low,clear
+"Remember I often use uv, so run python code with uv run X (instead of python X). packages are installed with uv pip install X (instead of pip install X) **Never** revert a change I made during a session, outside of your view, i.e. you look at something in a file and it seems to now be different than what you inserted, I likely overwrote it. Keep my version. Always make sure to share test case and main code, so that changes in either side are synchronized. Extract and share code for this if necessary.",severity_row1,TRUE,Fast,Low,no,low,clear
+"Additionally, give me a entertaining story about a conversation with a stranger on a bus.",severity_row1,FALSE,Fast,Low,no,low,clear
+"Write a JavaScript function that takes in a string and returns an object with each character of the string as a key, and the number of times that character appears in the string as the value.",severity_row3,TRUE,Fast,Low,no,medium,clear
+Write a 300 word report on the benefits of using AI in the criminal justice system.,severity_row3,FALSE,Fast,Low,no,medium,clear
+Rewrite the given sentence so it uses a different verb and maintains the same meaning.,severity_row2,TRUE,Balanced,Low,no,low,unclear
+"Write a story that begins with the sentence: ""As he looked out into the horizon, he saw...""",severity_row1,TRUE,Fast,Low,no,low,clear
+Could you create a subject + verb + object structure using the words bicycle and floating?,severity_row1,FALSE,Fast,Low,no,low,clear
+"Given the input, create 2 sub-goals that would help the person achieve the ultimate goal.",severity_row4,TRUE,Balanced,Low,no,medium,unclear
+"Based on the given input, classify the Reddit thread as being either related to politics or to finance.",severity_row2,FALSE,Balanced,Low,no,low,unclear
+"Classify the type of point (maximum, minimum, or none) at the critical point of the differential equation y=3x^3 + 10x^2 + 5.",severity_row3,FALSE,Fast,Low,no,medium,clear
+Write an email introducing yourself to a professor you will be taking an online course with,severity_row1,FALSE,Fast,Low,no,low,clear
+You are given a code snippet and you need to detect a bug in it.,severity_row4,TRUE,Balanced,Low,no,medium,unclear
+Write a summary of a study on the effects of using a computer-based education system,severity_row2,FALSE,Balanced,Low,no,low,unclear
+Create a chart that compares the benefits and drawbacks of using a variety of web-based learning systems,severity_row3,TRUE,Fast,Low,no,medium,clear
+Write a function to calculate the area of a triangle given the lengths of its sides.,severity_row1,FALSE,Fast,Low,no,low,clear
+Create a function to to check if a given number is an Armstrong number or not.,severity_row1,FALSE,Fast,Low,no,low,clear
+Create a task that a GPT model can complete with a given input and output.,severity_row3,TRUE,Fast,Low,no,medium,clear
+Create a program that generate a 100 to 500-word long text summarizing the content of the given text.,severity_row9,TRUE,Balanced,Medium,no,medium,clear
+Meet with the director of a wildlife conservation center and create a short news article summarizing the experience.,severity_row1,FALSE,Fast,Low,no,low,clear
