@@ -18,7 +18,7 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit && tsc --noEmit -p eval/tsconfig.json",
-    "test": "tsx --test eval/harness.test.ts",
+    "test": "tsx --test eval/harness.test.ts src/classifier/heuristics.test.ts",
     "eval": "tsx eval/run.ts",
     "prepublishOnly": "npm run typecheck && npm test && npm run build"
   },

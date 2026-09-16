@@ -56,24 +56,36 @@ const INTENT_WORDS = [
   "grammar",
   "reword",
   "rephrase",
+  "rewrite",
   "convert",
   "translate",
   "define",
 ] as const;
 
+/** Explicit conversion / rewrite phrases only — no open-ended "X to Y". */
 const INTENT_PHRASES = [
   "fix the wording",
   "rewrite this sentence",
+  "rewrite the sentence",
+  "rewrite the given sentence",
+  "more formal tone",
   "to celsius",
   "to fahrenheit",
   "to kg",
   "to lbs",
+  "to lbs.",
+  "to meters",
+  "to km",
+  "to miles",
+  "to usd",
+  "to inr",
   "what is",
 ] as const;
 
 const CODE_FENCE = /```|~~~|<\/?code[\s>]|<\/?pre[\s>]/i;
 const WHAT_DOES_MEAN = /\bwhat\s+does\s+\S+\s+mean\b/i;
-const X_TO_Y = /\b\S+\s+to\s+\S+\b/i;
+/** e.g. "make the second sentence shorter" — not bare "shorter" alone. */
+const MAKE_SHORTER = /\bmake\b[\s\S]{0,40}\bshorter\b/i;
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -111,10 +123,10 @@ function matchesKnownIntent(prompt: string): boolean {
   if (INTENT_PHRASES.some((phrase) => hasPhrase(prompt, phrase))) {
     return true;
   }
-  if (WHAT_DOES_MEAN.test(prompt) || X_TO_Y.test(prompt)) {
+  if (WHAT_DOES_MEAN.test(prompt) || MAKE_SHORTER.test(prompt)) {
     return true;
   }
-  return hasPhrase(prompt, "to lbs.");
+  return false;
 }
 
 function findSequencing(prompt: string): string | undefined {
