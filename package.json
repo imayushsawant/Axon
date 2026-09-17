@@ -1,6 +1,6 @@
 {
   "name": "axon-llmrouter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "SDK-based multi-tier LLM router (Frontier, Balanced, Fast) with Gate + Judge inference.",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
