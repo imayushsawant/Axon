@@ -11,3 +11,4 @@ Thumbs.db
 .vscode/
 tests/
 eval/results/
+eval_fresh_report.md
