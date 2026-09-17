@@ -13,6 +13,7 @@ import {
   type SeverityAxes,
 } from "../src/classifier/tierLookup.js";
 import { csvColumn, parseCsv, stringifyCsv } from "./csv.js";
+import { contextForEvalRow } from "./evalContext.js";
 
 const INPUT = resolve("eval/prompts.csv");
 const COLUMNS = [
@@ -25,11 +26,6 @@ const COLUMNS = [
   "human_reasoning_depth",
   "human_ambiguity",
 ] as const;
-
-const EVAL_CONTEXT = {
-  priorMessages: [{ role: "user", content: "[eval] older chat context is attached" }],
-  codeContext: "[eval] project files / tagged code are attached",
-};
 
 type Axes = {
   blast: BlastRadius;
@@ -60,7 +56,14 @@ function hasContextFlag(v: string): boolean {
 }
 
 function gate(prompt: string, context: boolean) {
-  return evaluateGate(prompt, context ? EVAL_CONTEXT : undefined);
+  const attached = context
+    ? contextForEvalRow({
+        prompt,
+        context: "true",
+        human_ambiguity: "Clear",
+      })
+    : undefined;
+  return evaluateGate(prompt, attached);
 }
 
 /** Prompts that were curated as near_miss in the eval set (sequencing, length, or context-only gate fail). */
@@ -295,7 +298,7 @@ function main(): void {
 
   const cats: Record<string, number> = {};
   for (const r of relabeled) {
-    cats[r.category] = (cats[r.category] ?? 0) + 1;
+    cats[r.category ?? ""] = (cats[r.category ?? ""] ?? 0) + 1;
   }
 
   let mismatches = 0;

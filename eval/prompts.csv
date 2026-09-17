@@ -1212,7 +1212,7 @@ Write a 250 word essay about Coral Reef Conservation,judge_ambiguity_clear,false
 "Additionally, give me a entertaining story about a conversation with a stranger on a bus.",judge_ambiguity_clear,false,fast,Low,no,Medium,Clear
 "Write a JavaScript function that takes in a string and returns an object with each character of the string as a key, and the number of times that character appears in the string as the value.",judge_ambiguity_clear,true,fast,Low,no,Medium,Clear
 Write a 300 word report on the benefits of using AI in the criminal justice system.,judge_ambiguity_clear,false,fast,Low,no,Medium,Clear
-Rewrite the given sentence so it uses a different verb and maintains the same meaning.,clean_heuristic,true,fast,Low,no,Low,Clear
+Rewrite the given sentence so it uses a different verb and maintains the same meaning.,judge_ambiguity_clear,true,fast,Low,no,Low,Clear
 "Write a story that begins with the sentence: ""As he looked out into the horizon, he saw...""",judge_ambiguity_clear,true,fast,Low,no,Medium,Clear
 Could you create a subject + verb + object structure using the words bicycle and floating?,judge_ambiguity_clear,false,fast,Low,no,Low,Clear
 "Given the input, create 2 sub-goals that would help the person achieve the ultimate goal.",judge_ambiguity_unclear,true,balanced,Low,no,Medium,Unclear

@@ -9,7 +9,8 @@
  *   npx tsx eval/run.ts --input prompts.csv --output eval/results/run.csv
  *   npx tsx eval/run.ts --input prompts.csv --output eval/results/run.csv --fresh
  *
- * classify() only needs a live Judge (AXON_JUDGE_* or Fast-tier credentials).
+ * Rows with context=true get prompt-specific priorMessages + codeContext
+ * (see eval/evalContext.ts). classify() only needs a live Judge.
  * Frontier/Balanced keys are unused unless you omit Judge and default to Fast.
  */
 import { existsSync } from "node:fs";
@@ -20,15 +21,10 @@ import { loadAxonEvalConfig, loadDotEnv, type JudgeRunConfig } from "./config.js
 import { csvColumn, csvHeaderLine, parseCsv, stringifyCsvRow, completedRowIndexes } from "./csv.js";
 import { computeMetrics, formatMetricsReport, type EvalMetrics } from "./metrics.js";
 import { boolToCsv, normalizeBool, normalizeTier } from "./normalize.js";
+import { contextForEvalRow, contextLooksLikeStub } from "./evalContext.js";
 import type { AxonConfig, ClassifyDecision, InferContext } from "./types.js";
 
 const REPO_ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
-
-/** Marker context so Gate's context_or_code veto fires when CSV `context=true`. */
-export const EVAL_ATTACHED_CONTEXT: InferContext = {
-  priorMessages: [{ role: "user", content: "[eval] older chat context is attached" }],
-  codeContext: "[eval] project files / tagged code are attached",
-};
 
 export const OUTPUT_COLUMNS = [
   "row_index",
@@ -334,11 +330,11 @@ export async function runEval(options: CliOptions): Promise<EvalMetrics> {
     let decision: ClassifyDecision | undefined;
     let error = "";
     try {
-      const wantsContext = normalizeBool(csvColumn(input, "context")) === true;
-      decision = await axon.classify(
-        csvColumn(input, "prompt"),
-        wantsContext ? EVAL_ATTACHED_CONTEXT : undefined,
-      );
+      const attached = contextForEvalRow(input);
+      if (contextLooksLikeStub(attached)) {
+        throw new Error(`Row ${rowIndex} still uses stub eval context`);
+      }
+      decision = await axon.classify(csvColumn(input, "prompt"), attached);
     } catch (err) {
       error = err instanceof Error ? err.message : String(err);
     }

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { completedRowIndexes, csvColumn, parseCsv, stringifyCsv } from "./csv.js";
+import { contextForEvalRow, contextLooksLikeStub } from "./evalContext.js";
 import { computeMetrics, formatRate } from "./metrics.js";
 import { normalizeBool, normalizeIrreversibility, normalizeTier } from "./normalize.js";
 
@@ -124,6 +125,80 @@ describe("metrics", () => {
     assert.equal(metrics.axis_agreement_row_count, 0);
     assert.equal(metrics.axis_agreement.blast_radius.total, 0);
     assert.equal(formatRate(metrics.axis_agreement.blast_radius), "n/a (0 rows)");
+  });
+});
+
+describe("evalContext", () => {
+  it("does not attach context when context=false", () => {
+    const ctx = contextForEvalRow({
+      prompt: "fix the null pointer exception on line 42 of index.js by adding a fallback value",
+      context: "false",
+      human_ambiguity: "Clear",
+    });
+    assert.equal(ctx, undefined);
+  });
+
+  it("attaches real index.js around line 42 for the NPE prompt", () => {
+    const ctx = contextForEvalRow({
+      prompt: "fix the null pointer exception on line 42 of index.js by adding a fallback value",
+      context: "true",
+      human_ambiguity: "Clear",
+    });
+    assert.ok(ctx);
+    assert.equal(contextLooksLikeStub(ctx), false);
+    assert.match(ctx!.codeContext ?? "", /index\.js/);
+    assert.match(ctx!.codeContext ?? "", /42\|/);
+    assert.match(ctx!.codeContext ?? "", /body\.user\.name/);
+  });
+
+  it("does not name a specific button for the unclear palette prompt", () => {
+    const ctx = contextForEvalRow({
+      prompt: "Update the color of the button we discussed to match the new palette.",
+      context: "true",
+      human_ambiguity: "Unclear",
+    });
+    assert.ok(ctx);
+    const blob = `${ctx!.codeContext}\n${(ctx!.priorMessages ?? []).map((m) => m.content).join("\n")}`;
+    assert.equal(contextLooksLikeStub(ctx), false);
+    assert.equal(/\b(submit button|login form button)\b/i.test(blob), false);
+  });
+
+  it("includes the cron job definition for the project-cron question", () => {
+    const ctx = contextForEvalRow({
+      prompt: "what is the point of cron job in this project?",
+      context: "true",
+      human_ambiguity: "Clear",
+    });
+    assert.ok(ctx);
+    assert.match(ctx!.codeContext ?? "", /nightly-rag-reindex|reindex-sources/);
+  });
+
+  it("attaches the specific navbar 28px icon context for row 9 nav bar prompt rather than general logo stub", () => {
+    const ctx = contextForEvalRow({
+      prompt:
+        "The icon in the nav bar is looking small as compared to the previous icon, So can you just try to make it bigger And tell me how are you going to do it are you going to increase the size from the navbar, or directly [logo.tsx](file;file:///d%3A/Code/flux/components/ui/logo.tsx)",
+      context: "true",
+      human_ambiguity: "Clear",
+    });
+    assert.ok(ctx);
+    assert.equal(contextLooksLikeStub(ctx), false);
+    assert.match(ctx!.priorMessages?.[0]?.content ?? "", /Previous PNG was 28px/);
+  });
+
+  it("honors CSV code_context and prior_messages overrides", () => {
+    const ctx = contextForEvalRow({
+      prompt: "fix it",
+      context: "true",
+      human_ambiguity: "Clear",
+      code_context: "function target() { return 1; }",
+      prior_messages: JSON.stringify([
+        { role: "user", content: "target() is in src/target.ts" },
+      ]),
+    });
+    assert.deepEqual(ctx, {
+      priorMessages: [{ role: "user", content: "target() is in src/target.ts" }],
+      codeContext: "function target() { return 1; }",
+    });
   });
 });
 

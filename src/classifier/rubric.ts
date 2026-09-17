@@ -52,12 +52,17 @@ Return ONLY a JSON object with exactly these keys:
 - "reasoningDepth": "Low" | "Medium" | "High"
 - "ambiguity": "Clear" | "Unclear"
 
+## Calibration & Tie-Break Rule
+When uncertain between two adjacent bands (Low vs Medium, or Medium vs High) for either Blast Radius or Reasoning Depth, always default to the higher band.
+
 ## Blast Radius
 Judged by how far incorrect output would propagate through downstream behavior, not by how many files or modules are structurally touched.
 
 - Low: A wrong response stays visible and contained to what the user directly sees or interacts with. Nothing else in the system silently consumes or depends on this output being correct. If it's wrong, someone notices immediately (or it's cosmetic) and nothing downstream is corrupted.
 - Medium: A wrong response feeds into one other part of the system, but the effect stays contained to a specific feature or flow. A bug here causes a localized, traceable problem, not something that quietly spreads everywhere.
 - High: A wrong response feeds into a mechanism that many other parts of the system rely on being correct, and the failure is likely to be silent, propagating incorrect state or output across multiple features before anyone notices.
+
+Scope Rule: Unbounded scope language ("entire", "all", "every", "throughout", "system-wide", "globally", "across the codebase") defaults to High blast radius unless the prompt itself explicitly scopes the impact narrowly to an isolated, non-critical component.
 
 ## Irreversibility
 true if a wrong response could cause real-world harm that code changes alone can't undo: destructive data loss, financial transactions, irrevocable external actions (sent messages, published content, revoked access), or security/auth changes.
@@ -72,6 +77,11 @@ Independent of how risky or reversible the task is. Count interdependent steps o
 - Low: Single, self-contained action. One step. No following or multiple steps.
 - Medium: Multiple steps where later steps depend on earlier ones, but the whole thing stays in one logical block and does not span different sections of the system. Example: add a new validation rule to an existing Zod schema, checking it does not conflict with existing rules.
 - High: Many interdependent steps, or steps that require significant context before starting. Often spans how multiple pieces interact, not a checklist. Changes in a later step depend on decisions in an earlier step. Example: designing a JWT token-sharing flow between two servers — timing, security, what each server must know, and how failure states cascade.
+
+Few-Shot Examples for Reasoning Depth:
+- Prompt: "Write API Docs in a Readme file" -> Medium (writing documentation requires structuring multiple endpoints, documenting parameters, error responses, request/response formats, and markdown hierarchy; multiple interdependent steps within one document).
+- Prompt: "make the just the docs theme light blue instead of lilac and add a link to the nav menu that points to the docs at https://nielstron.github.io/langlib/api/Langlib.html" -> Medium (multi-step UI task combining theme color variable overrides with navigation structure modification).
+- Prompt: "Write a JavaScript function that takes in a string and returns an object with each character of the string as a key, and the number of times that character appears in the string as the value." -> Medium (algorithmic task requiring loop traversal, accumulator map state management, and formatted return structure).
 
 ## Ambiguity
 Given the prompt AND any conversation, code, or metadata provided:

@@ -68,7 +68,7 @@ Measure routing quality with a labeled CSV you supply. Axis labels are optional;
 npm run eval -- --input eval/prompts.csv
 ```
 
-The harness calls **`dist/` `classify()`**. Rows with `context=true` are classified with a marker `InferContext` so Gate's `context_or_code` veto can fire. Results append to a CSV (resume-safe; `--fresh` overwrites), a sidecar `.meta.json` records Judge model and timestamps, and the report prints:
+The harness calls **`dist/` `classify()`**. Rows with `context=true` get prompt-specific `priorMessages` and `codeContext` from `eval/evalContext.ts` (CSV `code_context` / `prior_messages` override when present). Results append to a CSV (resume-safe; `--fresh` overwrites), a sidecar `.meta.json` records Judge model and timestamps, and the report prints:
 
 - Overall tier-match rate (target ≥ 80%)
 - Gate-decided vs Judge-decided tier-match
