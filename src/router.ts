@@ -67,6 +67,7 @@ export type ModelComplete = (
 ) => Promise<ProviderResult>;
 
 export type AxonInternals = {
+  judgeFetch?: typeof fetch;
   judgeComplete?: JudgeComplete;
   complete?: ModelComplete;
 };
@@ -162,10 +163,12 @@ export class Axon {
   readonly config: AxonConfig;
   private readonly modelComplete: ModelComplete;
   private readonly judgeComplete: JudgeComplete;
+  private readonly judgeFetch: typeof fetch | undefined;
   private readonly liveStatus: Partial<Record<ModelTier, string>> = {};
 
   constructor(config: AxonConfig, internals?: AxonInternals) {
     this.config = config;
+    this.judgeFetch = internals?.judgeFetch;
     this.modelComplete = internals?.complete ?? complete;
     this.judgeComplete =
       internals?.judgeComplete ?? asJudgeComplete(this.modelComplete);
@@ -209,7 +212,7 @@ export class Axon {
     }
 
     const judgeConfig = this.config.judge ?? this.config.tiers.fast;
-    const judge = await createJudge(judgeConfig, completeFn)(prompt, options?.context);
+    const judge = await createJudge(judgeConfig, completeFn, this.judgeFetch)(prompt, options?.context);
 
     if (!judge.ok) {
       return {

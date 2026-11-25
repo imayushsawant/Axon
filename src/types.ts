@@ -10,7 +10,15 @@ export type TierConfig = {
 
 export type LLMJudgeConfig = TierConfig & { provider?: "llm" };
 
-export type JudgeConfig = LLMJudgeConfig;
+export type JevJudgeConfig = TierConfig & {
+  provider: "jev";
+  /** API root including /v1. Defaults to https://api.typesafe.ai/v1. */
+  baseURL?: string;
+  /** Request deadline including response body, in milliseconds. Default 10,000. */
+  timeoutMs?: number;
+};
+
+export type JudgeConfig = LLMJudgeConfig | JevJudgeConfig;
 
 export type AxonConfig = {
   tiers: {

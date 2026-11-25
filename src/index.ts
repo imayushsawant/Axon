@@ -26,6 +26,7 @@ import type {
   ModelTier,
   JudgeConfig,
   LLMJudgeConfig,
+  JevJudgeConfig,
   PriorMessage,
   TierConfig,
 } from "./types.js";
@@ -51,6 +52,7 @@ export type {
   ModelTier,
   JudgeConfig,
   LLMJudgeConfig,
+  JevJudgeConfig,
   PriorMessage,
   ReasoningDepth,
   RoutingDecision,
