@@ -1,8 +1,3 @@
-import { chat } from "@tanstack/ai";
-import { createAnthropicChat } from "@tanstack/ai-anthropic";
-import { createGeminiChat } from "@tanstack/ai-gemini";
-import { createOpenaiChat } from "@tanstack/ai-openai";
-import { openaiCompatibleText } from "@tanstack/ai-openai/compatible";
 import type { PriorMessage, TierConfig } from "../types.js";
 
 export type ProviderId = string;
@@ -81,44 +76,49 @@ const NATIVE_PROVIDERS = new Set([
 
 const adapterFactories = new Map<ProviderId, AdapterFactory>();
 
-function defaultCreateOpenaiChat(model: string, apiKey: string): unknown {
+async function defaultCreateOpenaiChat(model: string, apiKey: string): Promise<unknown> {
+  const { createOpenaiChat } = await import("@tanstack/ai-openai");
   return createOpenaiChat(
     model as Parameters<typeof createOpenaiChat>[0],
     apiKey,
   );
 }
 
-function defaultCreateAnthropicChat(model: string, apiKey: string): unknown {
+async function defaultCreateAnthropicChat(model: string, apiKey: string): Promise<unknown> {
+  const { createAnthropicChat } = await import("@tanstack/ai-anthropic");
   return createAnthropicChat(
     model as Parameters<typeof createAnthropicChat>[0],
     apiKey,
   );
 }
 
-function defaultCreateGeminiChat(model: string, apiKey: string): unknown {
+async function defaultCreateGeminiChat(model: string, apiKey: string): Promise<unknown> {
+  const { createGeminiChat } = await import("@tanstack/ai-gemini");
   return createGeminiChat(
     model as Parameters<typeof createGeminiChat>[0],
     apiKey,
   );
 }
 
-function defaultCreateOpenaiCompatible(
+async function defaultCreateOpenaiCompatible(
   model: string,
   apiKey: string,
   baseURL: string,
-): unknown {
+): Promise<unknown> {
+  const { openaiCompatibleText } = await import("@tanstack/ai-openai/compatible");
   return openaiCompatibleText(model, { apiKey, baseURL });
 }
 
 const defaultBindings: ProviderBindings = {
-  chat: (options) => {
+  chat: async function* (options) {
+    const { chat } = await import("@tanstack/ai");
     const systemPrompts = options.messages
       .filter((message) => message.role === "system")
       .map((message) => message.content);
     const messages = options.messages.filter(
       (message) => message.role !== "system",
     );
-    return chat({
+    yield* chat({
       adapter: options.adapter as never,
       messages: messages as never,
       ...(systemPrompts.length > 0 ? { systemPrompts } : {}),
@@ -396,7 +396,7 @@ export async function complete(
   const modelName = resolveModelName(config.model, providerId);
   const started = Date.now();
   try {
-    const adapter = createAdapter(providerId, modelName, config, bindings);
+    const adapter = await createAdapter(providerId, modelName, config, bindings);
     const stream = bindings.chat({
       adapter,
       messages: buildChatMessages(request),
