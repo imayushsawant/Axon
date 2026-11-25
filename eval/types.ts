@@ -1,20 +1,5 @@
-export type ModelTier = "frontier" | "balanced" | "fast";
-
-export type TierConfig = {
-  model: string;
-  apiKey: string;
-  baseURL?: string;
-};
-
-export type AxonConfig = {
-  tiers: {
-    frontier: TierConfig;
-    balanced: TierConfig;
-    fast: TierConfig;
-  };
-  judge?: TierConfig;
-  fallbackTier: ModelTier;
-};
+import type { ModelTier } from "../src/types.js";
+export type { AxonConfig, ModelTier, TierConfig } from "../src/types.js";
 
 export type InferContext = {
   priorMessages?: { role: string; content: string }[];

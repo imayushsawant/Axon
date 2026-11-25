@@ -4,6 +4,7 @@ import type { AxonConfig, TierConfig } from "./types.js";
 import { normalizeTier } from "./normalize.js";
 
 export type JudgeRunConfig = {
+  provider: "llm" | "jev";
   model: string;
   baseURL?: string;
   source: "judge" | "fast (default)";
@@ -72,6 +73,10 @@ export function loadAxonEvalConfig(): { config: AxonConfig; judge: JudgeRunConfi
   const judgeModel = readOptional("AXON_JUDGE_MODEL");
   const judgeKey = readOptional("AXON_JUDGE_API_KEY");
   const judgeBase = readOptional("AXON_JUDGE_BASE_URL");
+  const provider = readOptional("AXON_JUDGE_PROVIDER") ?? "llm";
+  if (provider !== "llm" && provider !== "jev") {
+    throw new Error("AXON_JUDGE_PROVIDER must be llm or jev");
+  }
 
   const axon: AxonConfig = {
     tiers: { frontier, balanced, fast },
@@ -79,6 +84,22 @@ export function loadAxonEvalConfig(): { config: AxonConfig; judge: JudgeRunConfi
   };
 
   let judge: JudgeRunConfig;
+  if (provider === "jev") {
+    if (judgeKey === undefined) {
+      throw new Error("AXON_JUDGE_API_KEY is required for Jev");
+    }
+    const judgeConfig = {
+      provider: "jev" as const,
+      model: judgeModel ?? "jev-latest",
+      apiKey: judgeKey,
+      ...(judgeBase !== undefined ? { baseURL: judgeBase } : {}),
+    };
+    axon.judge = judgeConfig;
+    return { config: axon, judge: {
+      provider, model: judgeConfig.model, source: "judge",
+      ...(judgeBase !== undefined ? { baseURL: judgeBase } : {}),
+    } };
+  }
   if (judgeModel !== undefined || judgeKey !== undefined || judgeBase !== undefined) {
     if (judgeKey === undefined) {
       throw new Error("AXON_JUDGE_API_KEY is required when configuring a Judge model");
@@ -91,7 +112,7 @@ export function loadAxonEvalConfig(): { config: AxonConfig; judge: JudgeRunConfi
       judgeConfig.baseURL = judgeBase;
     }
     axon.judge = judgeConfig;
-    judge = { model: judgeConfig.model, source: "judge" };
+    judge = { provider, model: judgeConfig.model, source: "judge" };
     if (judgeConfig.baseURL !== undefined) {
       judge.baseURL = judgeConfig.baseURL;
     }
@@ -101,7 +122,7 @@ export function loadAxonEvalConfig(): { config: AxonConfig; judge: JudgeRunConfi
         "Set AXON_JUDGE_API_KEY (and AXON_JUDGE_MODEL) or AXON_FAST_API_KEY so classify() can call the Judge",
       );
     }
-    judge = { model: fast.model, source: "fast (default)" };
+    judge = { provider, model: fast.model, source: "fast (default)" };
     if (fast.baseURL !== undefined) {
       judge.baseURL = fast.baseURL;
     }

@@ -54,11 +54,47 @@ if ("needsConfirmation" in result) {
 
 `judge` is optional. `fallbackTier` is one of the three tiers, not a fourth model.
 
+### Choose the Judge backend
+
+The Judge can use an LLM through TanStack AI or Jev through TypeSafe's API. Both
+rate the same four axes and use the same tier lookup; choose based on your own evaluations.
+Existing Judge configuration remains valid. You can also explicitly set `provider: "llm"`.
+
+To select Jev, replace the `judge` field in the example above:
+
+```ts
+judge: {
+  provider: "jev",
+  model: "jev-latest",
+  apiKey: process.env.TYPESAFE_API_KEY!,
+  // timeoutMs: 10_000, // request + response body deadline
+  // baseURL: "https://api.typesafe.ai/v1", // /systemone is appended
+},
+```
+
+Jev sends the prompt, prior messages, code context, and metadata as structured state
+with four Choice questions in one request. Valid selected labels are accepted regardless
+of confidence. If either backend fails, `classify()` returns `judge_failed` and allocates
+`fallbackTier`; `infer()` calls that tier for the answer. Axon never retries judging with
+another backend. Jev is supported only as a Judge; the three completion tiers use LLMs.
+
+The Jev adapter uses built-in fetch, requires no extra package, and keeps Node 18 support.
+It makes one attempt with a default 10-second timeout. `health()` probes completion tiers,
+not Judge backends. Jev produces typed decisions without autoregressive text generation;
+its API still reports output tokens, whose price is zero. See the
+[API documentation](https://docs.typesafe.ai/introduction/quickstart) and
+[pricing](https://help.typesafe.ai/articles/5187202169-how-much-does-jev-cost).
+
 `classify(prompt)` runs Gate + Judge only (no completion on the allocated tier). It returns `allocatedTier`, `source` (`gate` | `judge` | `judge_failed`), and Judge axes when the Judge succeeded.
 
 ## Eval
 
 Measure routing quality with a labeled CSV you supply. Axis labels are optional; treat them as indicative, not audited ground truth.
+
+Set `AXON_JUDGE_PROVIDER=llm` (default) or `jev`. For Jev use a TypeSafe key in
+`AXON_JUDGE_API_KEY` and a Jev model in `AXON_JUDGE_MODEL` (defaults to `jev-latest`
+when omitted). Run each backend to a separate output CSV; the sidecar metadata records
+the selected provider and model. Do not resume one backend's output with another backend.
 
 1. Copy `eval/prompts.template.csv` and fill `prompt, category, context, expected_tier, human_*`. `context` is `true` if the prompt would include project files, tagged code, or older chat; `false` otherwise. Axis columns may be blank.
 2. `cp .env.example .env` and set `AXON_JUDGE_MODEL` / `AXON_JUDGE_API_KEY`. For an OpenAI-compatible host, also set `AXON_JUDGE_BASE_URL` and use that host’s catalog id as-is (Groq: `openai/gpt-oss-120b`). A non-empty `baseURL` sends `gpt-*` / `openai/...` through the compatible adapter instead of api.openai.com.
@@ -84,7 +120,8 @@ await axon.infer("rewrite this function", {
 });
 ```
 
-Chosen-tier (and fallback) completion gets **prompt + priorMessages + codeContext**. `metadata` is not sent to the model.
+Chosen-tier (and fallback) completion gets **prompt + priorMessages + codeContext**.
+`metadata` is sent to the selected Judge but excluded from tier completions.
 
 Pass context as a flat object (above) or as `{ context: { priorMessages, codeContext, metadata } }`.
 

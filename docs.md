@@ -6,7 +6,7 @@ Axon is a TypeScript SDK for in-process routing of LLM prompts. It categorizes p
 
 Axon uses a Gate and Judge system.
 1. Gate: Uses cheap heuristics to check if a prompt is trivial. If it is, it routes it to the Fast tier.
-2. Judge: If the Gate fails, a small LLM rates the prompt on complexity axes and routes it to Frontier, Balanced, or Fast.
+2. Judge: If the Gate fails, the developer-selected LLM or Jev backend rates the prompt on four axes. Axon's lookup table routes it to Frontier, Balanced, or Fast.
 
 ## Installation
 
@@ -33,8 +33,8 @@ const axon = new Axon(config);
 
 **AxonConfig Structure:**
 * `tiers`: Object containing configurations for `frontier`, `balanced`, and `fast` tiers. Each tier requires a `model` string, an `apiKey`, and an optional `baseURL`.
-* `judge` (Optional): Configuration for the Judge model. Defaults to the Fast tier if omitted.
-* `fallbackTier`: The tier to fall back to if the selected model fails. Must be one of `frontier`, `balanced`, or `fast`.
+* `judge` (Optional): `JudgeConfig`, either `LLMJudgeConfig` (`provider: "llm"` or omitted) or `JevJudgeConfig` (`provider: "jev"`). Both require `model` and `apiKey`. Defaults to the Fast tier's LLM if omitted.
+* `fallbackTier`: The tier to use when judging or the selected completion fails. Must be one of `frontier`, `balanced`, or `fast`. An irreversible Frontier completion failure stops inference.
 
 ### Methods
 
@@ -88,7 +88,7 @@ await axon.infer("rewrite this function", {
 Context items include:
 * `priorMessages`: Array of previous conversation messages.
 * `codeContext`: String containing relevant code blocks or files.
-* `metadata`: Custom data not sent to the model but passed along the pipeline.
+* `metadata`: Custom data sent to the selected Judge, but excluded from tier completions.
 
 ## Provider Support
 
@@ -97,3 +97,21 @@ Axon supports major LLM providers:
 * Anthropic (`claude-*`)
 * Gemini (`gemini-*`)
 * Any OpenAI-compatible provider (requires setting `baseURL` in the tier configuration).
+
+## Jev Judge
+
+Set `judge: { provider: "jev", model: "jev-latest", apiKey: process.env.TYPESAFE_API_KEY! }`.
+Jev and the LLM Judge are equal alternatives; the SDK does not rank their quality.
+Jev evaluates four Choice questions in one request and returns the same categorical axes.
+Valid selected labels are accepted regardless of confidence. Jev failure uses `fallbackTier`
+for the final answer directly, without calling another Judge.
+
+Jev's optional `baseURL` defaults to `https://api.typesafe.ai/v1`; Axon appends `/systemone`.
+Its optional `timeoutMs` is a positive integer in milliseconds, defaults to 10,000,
+and covers the request and response body. Requests are not retried automatically.
+The adapter uses built-in fetch with no additional dependencies and supports Node 18+.
+`health()` checks completion tiers; it does not probe either Judge backend.
+
+Jev produces structured decisions without autoregressive text generation. Output is free,
+although its API reports output token usage. See the [TypeSafe API](https://docs.typesafe.ai/introduction/quickstart)
+and [pricing](https://help.typesafe.ai/articles/5187202169-how-much-does-jev-cost).

@@ -69,6 +69,7 @@ Optional:
   --delay-ms <n>     Pause between Judge calls (default 0)
 
 Environment (loaded from .env if present):
+  AXON_JUDGE_PROVIDER                   llm (default) or jev
   AXON_JUDGE_MODEL, AXON_JUDGE_API_KEY, AXON_JUDGE_BASE_URL
   AXON_FAST_MODEL, AXON_FAST_API_KEY     (used if Judge is omitted)
   AXON_FRONTIER_*, AXON_BALANCED_*       (unused by classify(); placeholders ok)
@@ -234,6 +235,7 @@ function writeMetaPayload(args: {
     packageEntry: args.packageEntry,
     resumed: args.resumed,
     judge: {
+      provider: args.judge.provider,
       model: args.judge.model,
       source: args.judge.source,
       ...(args.judge.baseURL !== undefined ? { baseURL: args.judge.baseURL } : {}),
