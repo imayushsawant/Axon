@@ -1,10 +1,10 @@
 import { evaluateGate, type GateResult } from "./classifier/heuristics.js";
 import {
-  ratePrompt,
   type JudgeComplete,
   type JudgeFailure,
   type RubricRating,
 } from "./classifier/rubric.js";
+import { createJudge } from "./classifier/judge.js";
 import { lookupTier } from "./classifier/tierLookup.js";
 import { costSaved, latencySaved } from "./metrics/costLatency.js";
 import {
@@ -209,10 +209,7 @@ export class Axon {
     }
 
     const judgeConfig = this.config.judge ?? this.config.tiers.fast;
-    const judge = await ratePrompt(prompt, options?.context, {
-      judge: judgeConfig,
-      complete: completeFn,
-    });
+    const judge = await createJudge(judgeConfig, completeFn)(prompt, options?.context);
 
     if (!judge.ok) {
       return {

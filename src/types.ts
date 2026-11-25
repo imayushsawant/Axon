@@ -8,13 +8,17 @@ export type TierConfig = {
   baseURL?: string;
 };
 
+export type LLMJudgeConfig = TierConfig & { provider?: "llm" };
+
+export type JudgeConfig = LLMJudgeConfig;
+
 export type AxonConfig = {
   tiers: {
     frontier: TierConfig;
     balanced: TierConfig;
     fast: TierConfig;
   };
-  judge?: TierConfig;
+  judge?: JudgeConfig;
   fallbackTier: ModelTier;
 };
 

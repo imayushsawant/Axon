@@ -24,6 +24,8 @@ import type {
   InferStopped,
   InferSuccess,
   ModelTier,
+  JudgeConfig,
+  LLMJudgeConfig,
   PriorMessage,
   TierConfig,
 } from "./types.js";
@@ -47,6 +49,8 @@ export type {
   InferSuccess,
   JudgeFailure,
   ModelTier,
+  JudgeConfig,
+  LLMJudgeConfig,
   PriorMessage,
   ReasoningDepth,
   RoutingDecision,
