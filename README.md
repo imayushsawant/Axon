@@ -12,7 +12,7 @@ Axon does not host models. API keys are supplied by the integrating application 
 prompt
   → Gate (cheap heuristics)
       if it looks trivial → Fast, skip the Judge
-      otherwise → Judge (a small LLM rates the prompt on four axes)
+      otherwise → Judge (developer-selected LLM or Jev rates four axes)
   → lookup table → Frontier | Balanced | Fast
   → call that tier’s model
 ```

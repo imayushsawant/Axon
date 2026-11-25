@@ -9,6 +9,5 @@ Thumbs.db
 *.tsbuildinfo
 .idea/
 .vscode/
-tests/
 eval/results/
 eval_fresh_report.md
