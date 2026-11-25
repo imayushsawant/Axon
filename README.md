@@ -4,7 +4,7 @@ npm: `[axon-llmrouter](https://www.npmjs.com/package/axon-llmrouter)`
 
 Axon is a TypeScript SDK that runs in-process and **picks a model for each prompt**. Configuration defines three tiers: expensive/capable (**Frontier**), mid (**Balanced**), and cheap/fast (**Fast**). Call `infer()` and Axon routes simple work away from Frontier.
 
-Axon does not host models. API keys are supplied by the integrating application (OpenAI, Anthropic, Gemini, or any OpenAI-compatible endpoint).
+Axon does not host models. API keys are supplied by the integrating application (OpenAI, Anthropic, Gemini, any OpenAI-compatible endpoint, or TypeSafe for a Jev Judge).
 
 ## How it decides
 
@@ -79,7 +79,9 @@ of confidence. If either backend fails, `classify()` returns `judge_failed` and 
 another backend. Jev is supported only as a Judge; the three completion tiers use LLMs.
 
 The Jev adapter uses built-in fetch, requires no extra package, and keeps Node 18 support.
-It makes one attempt with a default 10-second timeout. `health()` probes completion tiers,
+It makes one attempt with a default 10-second timeout. Jev has not yet been evaluated
+against Axon's labeled dataset, so compare its quality and latency with your own workload
+before relying on its routing decisions. `health()` probes completion tiers,
 not Judge backends. Jev produces typed decisions without autoregressive text generation;
 its API still reports output tokens, whose price is zero. See the
 [API documentation](https://docs.typesafe.ai/introduction/quickstart) and
@@ -95,6 +97,8 @@ Set `AXON_JUDGE_PROVIDER=llm` (default) or `jev`. For Jev use a TypeSafe key in
 `AXON_JUDGE_API_KEY` and a Jev model in `AXON_JUDGE_MODEL` (defaults to `jev-latest`
 when omitted). Run each backend to a separate output CSV; the sidecar metadata records
 the selected provider and model. Do not resume one backend's output with another backend.
+Earlier local evaluation CSVs and reports capture previous LLM Judge runs; they are not
+Jev results and do not establish Jev's accuracy or latency.
 
 1. Copy `eval/prompts.template.csv` and fill `prompt, category, context, expected_tier, human_*`. `context` is `true` if the prompt would include project files, tagged code, or older chat; `false` otherwise. Axis columns may be blank.
 2. `cp .env.example .env` and set `AXON_JUDGE_MODEL` / `AXON_JUDGE_API_KEY`. For an OpenAI-compatible host, also set `AXON_JUDGE_BASE_URL` and use that host’s catalog id as-is (Groq: `openai/gpt-oss-120b`). A non-empty `baseURL` sends `gpt-*` / `openai/...` through the compatible adapter instead of api.openai.com.
